@@ -1495,6 +1495,25 @@
         </div>
     </div>
 
+    <!-- CSV IMPORT PROGRESS MODAL -->
+    <div id="csv-import-progress-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; flex-direction:column; justify-content:center; align-items:center;">
+        <div
+            style="background:white; padding:30px; border-radius:8px; width:90%; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0; color:var(--primary); margin-bottom:15px;">Importing Database</h3>
+            <div
+                style="width:100%; height:15px; background:#e0e0e0; border-radius:10px; overflow:hidden; margin-bottom:10px;">
+                <div id="csv-import-progress-bar"
+                    style="height:100%; width:0%; background:var(--primary); transition:width 0.2s;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:#555; margin-bottom:8px;">
+                <span id="csv-import-pct-label">0%</span>
+                <span id="csv-import-count-label">0 rows</span>
+            </div>
+            <div id="csv-import-status-label" style="font-size:13px; font-weight:bold; color:#333;">Preparing...</div>
+        </div>
+    </div>
+
     <script src="pdf_templates.js"></script>
 
     <script src="script.js"></script>
