@@ -1968,7 +1968,7 @@ async function displayEnrollmentFormUI(history) {
     safeSet('f_brgy_farmer', cf.Barangay);
     safeSet('f_st_farmer', cf.Street);
 
-    ['f_id', 'f_lname', 'f_fname', 'f_st_farmer', 'f_brgy_farmer', 'f_mun_farmer', 'f_prov_farmer'].forEach(id => {
+    ['f_id', 'f_lname', 'f_fname'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.readOnly = !isWalkIn;
     });
