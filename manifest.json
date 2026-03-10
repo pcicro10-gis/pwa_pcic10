@@ -4,6 +4,11 @@
     "description": "Digital application form for PCIC Insurance.",
     "start_url": "index.html",
     "display": "fullscreen",
+    "display_override": [
+        "window-controls-overlay",
+        "fullscreen",
+        "standalone"
+    ],
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
     "icons": [

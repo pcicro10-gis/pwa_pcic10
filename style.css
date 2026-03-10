@@ -6,7 +6,7 @@
     --text-dark: #333;
     --border: #ddd;
     --sidebar-width: 280px;
-    --top-bar-height: 50px;
+    --top-bar-height: max(50px, env(titlebar-area-height, 50px));
     --canvas-height: 140px;
     --modal-max-width: 750px;
     --spacing-xs: 4px;
@@ -164,10 +164,15 @@ body.sidebar-open .sidebar-overlay {
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    padding: 0 var(--spacing-lg);
+    padding: env(titlebar-area-y, 0px) env(titlebar-area-width, var(--spacing-lg)) 0 env(titlebar-area-x, var(--spacing-lg));
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
+    -webkit-app-region: drag;
+}
+
+.top-bar * {
+    -webkit-app-region: no-drag;
 }
 
 .content-area {
