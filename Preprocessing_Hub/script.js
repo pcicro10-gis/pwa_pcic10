@@ -115,8 +115,18 @@ document.addEventListener('DOMContentLoaded', () => {
         let newRecords = [];
         let newHeaders = [];
 
-        // Show loading state if needed
-        dropZone.innerHTML = `<div class="upload-content"><h3>Processing ${files.length} files...</h3></div>`;
+        // Show progress UI container
+        dropZone.innerHTML = `
+            <div class="upload-content" style="width: 100%; max-width: 400px; margin: 0 auto;">
+                <h3 style="margin-bottom: 15px;">Processing Files...</h3>
+                <div style="background: var(--border); border-radius: 8px; height: 20px; width: 100%; overflow: hidden;">
+                    <div id="import-progress-bar" style="background: var(--primary); width: 0%; height: 100%; transition: width 0.3s ease;"></div>
+                </div>
+                <p id="import-progress-text" style="margin-top: 10px; font-size: 0.9em; color: var(--text-muted);">0 / ${files.length} files (0%)</p>
+            </div>
+        `;
+        const progressBar = document.getElementById('import-progress-bar');
+        const progressText = document.getElementById('import-progress-text');
 
         // Calculate starting index based on existing data
         let currentIndex = csvData.length + 1;
@@ -264,10 +274,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             });
+
+            // Update Progress UI After Each File
+            processedCount++;
+            const percent = Math.round((processedCount / files.length) * 100);
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (progressText) progressText.textContent = `${processedCount} / ${files.length} files (${percent}%)`;
         }
 
         // Append new records to existing data
         csvData = [...csvData, ...newRecords];
+
+        // Show saving state
+        if (progressText) {
+            progressText.textContent = `Saving ${newRecords.length} records to local storage...`;
+            progressBar.style.width = `100%`;
+            progressBar.style.backgroundColor = `var(--accent)`; // Change color to indicate saving phase
+
+            // Allow text to render before heavy IDB block
+            await new Promise(r => setTimeout(r, 100));
+        }
 
         // Save to IndexedDB
         await saveToStorage();
