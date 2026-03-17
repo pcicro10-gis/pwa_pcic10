@@ -73,10 +73,6 @@ pwa_pcic10/
 ├── service-worker.js           # Offline caching (Cache-first strategy)
 │
 ├── app_updates.js              # ⭐ EDIT THIS to update announcements & release notes
-├── db_manager.js               # Low-level IndexedDB CRUD functions
-├── csv_handler.js              # CSV import/export logic for all insurance types
-├── address_autocomplete.js     # Philippine address (Province/Municipality/Barangay) dropdowns
-├── farm_selector_functions.js  # Farm parcel selection helper
 ├── pdf_templates.js            # All PDF form layout definitions (~2.2MB)
 │
 ├── asset/
@@ -98,26 +94,24 @@ pwa_pcic10/
 
 ### Key File Descriptions
 
-| File | Lines | Description |
-|---|---|---|
-| `index.html` | ~1,590 | Single HTML file containing all 6 main views, all modals, and the sidebar. Views are shown/hidden by JavaScript. |
-| `script.js` | ~4,673 | The heart of the application. Contains all business logic: farmer search, form submission, PDF generation triggering, history management, settings, and all UI event handlers. |
-| `style.css` | ~2,500 | All CSS including the dashboard glassmorphism design, satellite hero background, responsive layouts, and modals. |
-| `app_updates.js` | ~95 | **Easiest file to maintain.** Contains two JavaScript constants: `APP_ANNOUNCEMENT` (the yellow banner text) and `APP_RELEASE_NOTES` (the scrollable update log). Edit these when publishing a new version. |
-| `db_manager.js` | ~291 | A secondary raw IndexedDB manager. Used by the preprocessing hub and CSV handler for low-level operations. |
-| `csv_handler.js` | ~552 | Handles the full CSV export/import pipeline for all four insurance types with type-specific column layouts and validation. |
-| `pdf_templates.js` | large | Stores all the base64-encoded image data and layout definitions needed to generate the official PDF forms. Large file due to embedded images. |
-| `service-worker.js` | 86 | Registers a cache and stores all app assets for offline use. Uses Cache-first strategy. |
+| File | Description |
+|---|---|
+| `index.html` | Single HTML file containing all 7 main views, all modals, and the sidebar. Views are shown/hidden by JavaScript. |
+| `script.js` | The heart of the application. Contains all business logic: farmer search, form submission, PDF generation triggering, history management, settings, addresses, and UI event handlers. |
+| `style.css` | All CSS including the dashboard glassmorphism design, satellite hero background, responsive layouts, and modals. |
+| `app_updates.js` | Contains two JavaScript constants: `APP_ANNOUNCEMENT` and `APP_RELEASE_NOTES`. Edit these when publishing a new version. |
+| `pdf_templates.js` | Stores all the base64-encoded image data and layout definitions needed to generate the official PDF forms. |
+| `service-worker.js` | Registers a cache and stores all app assets for offline use. Uses Cache-first strategy. |
 
 ---
 
 ## 4. Database Architecture (IndexedDB)
 
-The app uses **two separate IndexedDB instances** — one managed by Dexie.js (the primary database) and one raw IndexedDB (used by `db_manager.js` for auxiliary operations).
+The app uses **Dexie.js** as its primary library to manage the client-side database. All application data is stored locally on the device.
 
 ### 4.1 Primary Database — Dexie.js (`PCIC_Offline_DB_V6`)
 
-Initialized in `script.js` (line 145-152):
+Initialized in `script.js`:
 
 ```javascript
 const db = new Dexie("PCIC_Offline_DB_V6");
@@ -135,7 +129,7 @@ db.version(2).stores({
 | `profiles` | `FarmersID` | LastName, FirstName, RSBSAID, Municipality, Province, Barangay | All imported farmer profile records |
 | `records` | auto-increment `id` | FARMERSID, FarmersID, CICNO, PROGRAMTYPE | Historical insurance records (from PCIC main database) |
 | `apps` | auto-increment `id` | FarmersID, LastName, CropType, Month | New insurance applications created in-app |
-| `settings` | `key` | — | App settings (e.g., underwriter name, last version seen) |
+| `settings` | `key` | — | App settings (e.g., underwriter name, last version seen, PDF layouts) |
 | `hvc_rates` | `name` | — | High Value Crop insurance rates (seeded with 40+ defaults) |
 
 #### Important `apps` Store Schema
@@ -148,24 +142,11 @@ Each record in `db.apps` stores the full application form data. Key fields inclu
 | `InsuranceLine` | String | One of: `Crop`, `ADSS`, `Livestock`, `Banca` |
 | `CropType` | String | Crop name or insurance sub-type |
 | `AmountCover` | Number | Insurance coverage amount in PHP |
-| `Premium` | Number | Insurance premium in PHP |
 | `timestamp` | ISO Date String | Date/time of application creation |
-| `signatureData` | Base64 String | Farmer's digital signature image |
-| `farmerSignature` | Base64 String | Alternate signature field |
+| `Signature` | Base64 String | Farmer's digital signature image (PNG) |
+| `Photo` | Base64 String | Farmer's portrait photo (JPEG) |
 
-### 4.2 Secondary Database — Raw IndexedDB (`PCICInsuranceDB`)
-
-Managed by `db_manager.js`. Used by auxiliary modules.
-
-| Object Store | Key Path | Indexes | Purpose |
-|---|---|---|---|
-| `profiles` | `FarmersID` | LastName, ProvFarmer, MunFarmer | Farmers (alternate store) |
-| `apps` | `id` | FarmersID, InsuranceLine, status, timestamp | Applications (alternate store) |
-| `settings` | `id` | — | Calibration/config data |
-
-> **Note for maintainers:** The primary data used by the main app UI is always in the **Dexie.js** stores. The raw IndexedDB stores in `db_manager.js` are used by supplementary modules and for data export functions. They should stay in sync but may diverge if data is imported through different pathways.
-
-### 4.3 localStorage Keys
+### 4.2 localStorage Keys
 
 Small configuration values are stored in `localStorage` (not IndexedDB):
 
@@ -258,24 +239,29 @@ The application uses a **Simplified Flow** where picking a farmer goes straight 
 |---|---|
 | `showView(id)` | Toggles the visible content area. Hides all views; shows only the one with the matching `id`. |
 | `toggleSidebar()` | Toggles the `sidebar-open` CSS class on `<body>` to show/hide the mobile sidebar. |
+| `goToStep(stepId)` | Manages the multi-step navigation (Stepper) within the enrollment form. |
+| `toggleAppFullscreen()` | Requests or exits browser fullscreen mode for the entire application. |
 
 ### 6.3 Farmer Search & Enrollment
 
 | Function | Description |
 |---|---|
-| `searchFarmer()` | Reads search fields (ID, name, province, municipality, barangay) and queries `db.farmers`. Displays results in a table. |
-| `selectFarmer(farmerId)` | Loads a farmer from `db.farmers` and shows their insurance history popup. |
-| `confirmNewApplicant()` | Prompts for new applicant confirmation and loads a blank enrollment form. |
-| `saveApp()` | Validates all required fields, collects form data, saves to `db.apps`, and triggers PDF download. |
-| `generateIndividualPDF(appId)` | Retrieves an application from `db.apps` by ID and regenerates the PDF. Used for redownloading from History. |
-| `checkGuardianRequirement()` | Checks farmer's age from DOB. Automatically shows the guardian signature section for minors aged 15-18. |
+| `searchFarmer()` | Queries `db.profiles` based on RSBSA ID, Name, or Address and displays results. |
+| `pickFarmer(id)` | Fetches a farmer's profile and history, saves to local state, and loads the enrollment form. |
+| `displayEnrollmentFormUI(history)` | Renders the enrollment form with pre-filled farmer data and populates the Farm Selector. |
+| `fillPolicyFromRecord(history)` | Auto-fills policy, location, and farm details from a selected historical record. |
+| `onFarmSelect(farmId)` | Event handler for the Farm Selector dropdown. Triggers `fillPolicyFromRecord`. |
+| `finalizeApplication(mode)` | Validates the form, saves the application to `db.apps`, and triggers PDF generation. |
+| `generateIndividualPDF(data)` | The core PDF engine. Uses **jsPDF** to draw data onto a template based on the calibrated layout. |
+| `checkGuardianRequirement()` | Automatically toggles the guardian signature section based on the farmer's calculated age. |
 
 ### 6.4 History & Log Functions
 
 | Function | Description |
 |---|---|
-| `refreshLog()` | Fetches **all** applications from `db.apps` (no limit), sorted by newest first. Renders the History/Log view table with PDF redownload buttons. |
-| `deleteAppRecord(id)` | Deletes a single application record from `db.apps` after user confirmation. |
+| `refreshLog()` | Fetches applications from `db.apps` and renders the "Recent History" table. |
+| `previewSummary()` | Filters applications in the Summary view according to user-selected criteria. |
+| `deleteSelectedPreviewItems()` | Bulk deletes selected application records from `db.apps`. |
 
 ### 6.5 Summary & Statistics
 
@@ -295,25 +281,12 @@ The application uses a **Simplified Flow** where picking a farmer goes straight 
 | `hardRefreshApp()` | **Hard Refresh:** Unregisters all service workers, clears all service worker caches, then calls `window.location.reload(true)`. Use when the app is stuck on an old version. |
 | `sendFeedback()` | Opens the user's email app pre-filled with an issue report addressed to `ro10msd@pcicgov.onmicrosoft.com`. |
 
-### 6.7 CSV & Data Management (`csv_handler.js`)
+### 6.7 Data Import & Management
 
 | Function | Description |
 |---|---|
-| `exportToCSV(type, ids)` | Exports applications to a `.csv` file. Supports type-specific export (Crop, ADSS, Livestock, Banca) or All. |
-| `importFromCSV(file, type)` | Reads a CSV file, validates rows, and bulk-inserts valid records into IndexedDB. |
-| `parseCSV(csv, type)` | Parses raw CSV text and returns `{ data, errors, headers }`. |
-| `validateImportRecord(record, type)` | Validates a single parsed row against required field rules. |
-
-### 6.8 Database Functions (`db_manager.js`)
-
-| Function | Description |
-|---|---|
-| `initDB()` | Opens the `PCICInsuranceDB` raw IndexedDB, creating object stores if needed. |
-| `saveFarmer(data)` | Inserts or updates a record in the `profiles` object store. |
-| `saveApplication(data)` | Inserts or updates a record in the `apps` object store. |
-| `getApplications(filter)` | Retrieves all applications, with optional filtering by type, status, or search term. |
-| `getApplicationStats()` | Returns a count breakdown of applications by insurance line and status. |
-| `clearAllData()` | Wipes all records from `profiles`, `apps`, and `settings` stores. |
+| `importData(type, input)` | The primary CSV import engine. Parses headers, validates rows, and writes to IndexedDB with a progress bar. |
+| `generateSummary(fmt)` | Exports filtered applications from the Summary view to either CSV or PDF format. |
 
 ---
 
@@ -325,7 +298,7 @@ When a resource is requested, the service worker checks the cache first. If foun
 ### 7.2 Cached Resources
 All of the following are cached on first install (`service-worker.js` lines 2-35):
 - `index.html`, `style.css`, `script.js`, `manifest.json`
-- `pdf_templates.js`, `farm_selector_functions.js`, `db_manager.js`, `csv_handler.js`, `address_autocomplete.js`
+- `pdf_templates.js`, `app_updates.js`
 - `asset/logo.png`, `asset/sidebar_logo.png`, `asset/PCIC RO10 User Guide.pdf`
 - Font Awesome CSS and all font files (self-hosted)
 - All third-party libraries in `lib/`
@@ -482,7 +455,6 @@ In **Settings**, individual data stores can be cleared with the 🗑️ buttons 
 | **Manual CSV distribution** | Currently, DB updates (new farmer profiles) must be manually imported per device via CSV file. |
 | **SharePoint embedding blocked** | The brochure viewer attempts to embed a SharePoint URL in an iframe, but SharePoint's `X-Frame-Options: SAMEORIGIN` policy blocks external embedding. The brochure must currently be opened in a new tab. |
 | **No server backend** | The app is a pure frontend PWA. There is no server, no authentication, no user accounts, and no real-time sync. |
-| **Service worker cache version** | The service worker cache name (`pcic-app-v1.3.3`) is currently out of sync with the app version (`v1.4.1`). This should be updated before the next deployment to ensure proper cache invalidation. |
 
 ### 11.2 Planned Future Enhancements
 

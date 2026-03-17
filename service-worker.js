@@ -1,10 +1,11 @@
-const CACHE_NAME = 'pcic-app-v1.3.3';
+const CACHE_NAME = 'pcic-app-v1.4.1';
 const urlsToCache = [
     'index.html',
     'style.css',
     'script.js',
     'manifest.json',
     'pdf_templates.js',
+    'app_updates.js',
     'asset/logo.png',
     'asset/sidebar_logo.png',
     'lib/dexie.js',
@@ -13,10 +14,6 @@ const urlsToCache = [
     'lib/jspdf.js',
     'lib/jspdf-autotable.js',
     'lib/pdf-lib.js',
-    'farm_selector_functions.js',
-    'db_manager.js',
-    'csv_handler.js',
-    'address_autocomplete.js',
     'lib/font-awesome/css/all.min.css',
     'lib/font-awesome/webfonts/fa-solid-900.woff2',
     'lib/font-awesome/webfonts/fa-solid-900.ttf',
