@@ -3,7 +3,7 @@ function toggleSidebar() {
 }
 
 // === VERSION CONTROL ===
-const APP_VERSION = "1.4.0"; // Single source of truth
+const APP_VERSION = "1.4.1"; // Single source of truth
 // =======================
 
 const getDeviceID = () => {
@@ -946,6 +946,7 @@ async function ensureDefaultRates() {
         { name: 'Carrot', rate: 50000 },
         { name: 'Casava', rate: 50000 },
         { name: 'Chayote', rate: 50000 },
+        { name: 'Coconut', rate: 70000 },
         { name: 'Coffee', rate: 50000 },
         { name: 'Cucumber', rate: 50000 },
         { name: 'Dragon Fruit', rate: 50000 },
@@ -2953,8 +2954,24 @@ async function saveIndividualPDF(data) {
     await generateIndividualPDF(data);
 }
 
+async function hardRefreshApp() {
+    if (confirm("Are you sure you want to hard refresh? This will clear the app cache and reload the latest version.")) {
+        if ('serviceWorker' in navigator) {
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+            } catch (err) {
+                console.error("Service Worker unregistration failed:", err);
+            }
+        }
+        window.location.reload(true);
+    }
+}
+
 async function refreshLog() {
-    const list = await db.apps.reverse().limit(10).toArray();
+    const list = await db.apps.reverse().toArray();
     const body = document.getElementById('log-body');
     if (!body) return;
     body.innerHTML = list.map(a => `

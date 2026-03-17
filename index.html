@@ -226,9 +226,7 @@
                     <line x1="12" y1="8" x2="12" y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <span id="announcement-text">⚠️ <strong>This Application is under further testing for functionality
-                        enhancement.</strong> If you encountered issues in using the app, kindly report to the office
-                    promptly. Thank you.</span>
+                <span id="announcement-text"><!-- Content injected by app_updates.js --></span>
             </span>
             <button class="announcement-dismiss" onclick="this.parentElement.style.display='none'" aria-label="Dismiss"
                 title="Dismiss">&times;</button>
@@ -1213,7 +1211,16 @@
         <!-- SETTINGS VIEW -->
         <div id="view-settings" class="content-area" style="display:none">
 
-
+            <!-- System Tools / Hard Refresh -->
+            <div class="card" style="border-left: 5px solid #d32f2f; background: #ffebee; margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong style="color:#c62828;">System Tools</strong>
+                        <p style="margin:0; font-size:11px; color:#b71c1c;">Force update the application to the latest version.</p>
+                    </div>
+                    <button class="btn btn-secondary" style="background:#d32f2f; color:white; border:none;" onclick="hardRefreshApp()"> <i class="fas fa-sync-alt"></i> Hard Refresh </button>
+                </div>
+            </div>
             <div class="card">
                 <div class="section-title">Manage Crop Rates (Per Hectare)</div>
                 <div class="hvc-manage-item">
@@ -1456,65 +1463,9 @@
             <!-- Release Notes Log -->
             <div class="card" style="margin-top:20px;">
                 <h3 style="border-bottom:1px solid #eee; padding-bottom:10px; margin-top:0;">Update Released Notes</h3>
-                <div
+                <div id="update-release-notes-content"
                     style="height:300px; overflow-y:auto; padding:15px; background:#fafafa; border:1px solid #eee; border-radius:4px; font-size:13px; line-height:1.6;">
-                    <strong>v1.4.0 (2026-03-10)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>[FEAT] Incorporate the Pre-processing hub.</li>
-                        <li>[FEAT] Added NCFRS input field.</li>
-                        <li>[FEAT] Allowed edit for farmer's address manually.</li>
-                        <li>[FEAT] Auto delete the previous farm details when new policy.</li>
-                        <li>[FEAT] Supported full screen signature.</li>
-                        <li>[FEAT] Put required field prompt before saving the application form.</li>
-                    </ul>
-
-                    <strong>v1.3.4 (2026-02-27)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>[FEAT] Replaced individual brochure modals with a single unified Google Drive folder view.
-                        </li>
-                    </ul>
-
-                    <strong>v1.3.0 (2026-02-25)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>[FEAT] Full Home Dashboard UI redesign: satellite background, glassmorphism hero card, SVG
-                            sidebar icons, announcement banner, 3-column footer. New Geospatial Digital Insurance
-                            platform aesthetic.</li>
-                    </ul>
-
-                    <strong>v1.2.6 (2026-02-24)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>Relocated brochure access to Home Dashboard; added brochure modal.</li>
-                    </ul>
-
-                    <strong>v1.2.3 (2026-02-24)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>Updated dynamic PDF generation filename logic per line.</li>
-                    </ul>
-
-                    <strong>v1.2.2 (2026-02-24)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>Added Update Banner and Release Notes Modal.</li>
-                    </ul>
-
-                    <strong>v1.1.2 (2026-01-30)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>Embedded the PCIC RO10 logo to the script.</li>
-                    </ul>
-
-                    <strong>v1.0.2 (2026-01-29)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>[FIX] Replaced 'Suffix' with 'Middle Name'; Fixed Save bugs.</li>
-                    </ul>
-
-                    <strong>v1.0.1 (2026-01-28)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 15px;">
-                        <li>[FEAT] Added Farm Selector; Fixed blank PDF issues.</li>
-                    </ul>
-
-                    <strong>v1.0.0 (2026-01-01)</strong>
-                    <ul style="margin-top: 5px; margin-bottom: 5px;">
-                        <li>Initial Release.</li>
-                    </ul>
+                    <!-- Content injected by app_updates.js -->
                 </div>
             </div>
         </div>
@@ -1636,7 +1587,7 @@
     </div>
 
     <script src="pdf_templates.js"></script>
-
+    <script src="app_updates.js"></script>
     <script src="script.js"></script>
 </body>
 
