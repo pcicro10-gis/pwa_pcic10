@@ -104,6 +104,37 @@ function dismissUpdateBanner(event) {
 }
 function normalizeKey(key) { return key.trim().replace(/[\s\.]+/g, ''); }
 
+// Global auto-uppercase: converts text/tel input values to uppercase as user types
+document.addEventListener('input', function (e) {
+    const el = e.target;
+    if ((el.tagName === 'INPUT') &&
+        (el.type === 'text' || el.type === 'tel') &&
+        !el.dataset.noUpper) {
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        el.value = el.value.toUpperCase();
+        el.setSelectionRange(start, end); // preserve cursor position
+    }
+});
+// ADSS: "Same as Home Address" checkbox handler
+function fillSameAsHome(checkbox) {
+    const workAddrEl = document.getElementById('adss_work_addr');
+    if (!workAddrEl) return;
+    if (checkbox.checked) {
+        const st = (document.getElementById('f_st_farmer')?.value || '').trim();
+        const brgy = (document.getElementById('f_brgy_farmer')?.value || '').trim();
+        const mun = (document.getElementById('f_mun_farmer')?.value || '').trim();
+        const prov = (document.getElementById('f_prov_farmer')?.value || '').trim();
+        workAddrEl.value = [st, brgy, mun, prov].filter(Boolean).join(', ').toUpperCase();
+        workAddrEl.readOnly = true;
+        workAddrEl.style.background = '#f1f8e9';
+    } else {
+        workAddrEl.value = '';
+        workAddrEl.readOnly = false;
+        workAddrEl.style.background = '';
+    }
+}
+
 function calculateAge(birthDateString) {
     if (!birthDateString) return 0;
     const birthDate = new Date(birthDateString);
@@ -817,7 +848,8 @@ function saveEnrollmentState() {
         'f_area': 'AREA',
         'f_georef': 'GEOTAG',
         'f_variety': 'VARIETYNAME',
-        'f_top': 'TOP'
+        'f_top': 'TOP',
+        'f_farm_purok': 'FarmPurok'
     };
 
     for (let id in farmFieldMap) {
@@ -1584,17 +1616,16 @@ function fillPolicyFromRecord(history, scope = 'all') {
         }
 
         // Variety (Crop)
-        const variety = history.Variety || history.VARIETY_NAME || history["VARIETY NAME"];
+        const variety = history.Variety || history.VarietyName || history.VARIETYNAME || history.VARIETY_NAME || history["VARIETY NAME"] || history.VARIETY || '';
         safeSet('f_variety', variety);
 
         // Type of Planting
-        const top = history.TypePlanting || history.TYPE_OF_PLANTING || history["TYPE OF PLANTING"];
+        const top = history.TypePlanting || history.TYPE_OF_PLANTING || history["TYPE OF PLANTING"] || history.TYPEOFPLANTING || '';
         safeSet('f_top', top);
 
         // Planting Date
-        let plantDate = history.Planting || history.DATE_OF_TRANSPLANT || history["DATE OF TRANSPLANT"];
-        if (!plantDate || plantDate === '-') plantDate = history.DATE_OF_SOWING || history["DATE OF SOWING"];
-        if (!plantDate || plantDate === '-') plantDate = history.PRODUCTION_DATE || history["PRODUCTION DATE"];
+        let plantDate = history.Planting || history.PRODUCTIONDATE || history.ProductionDate || history.PRODUCTION_DATE || history["PRODUCTION DATE"] || history.DATE_OF_TRANSPLANT || history["DATE OF TRANSPLANT"] || history.DATEOFTRANSPLANT || '';
+        if (!plantDate || plantDate === '-') plantDate = history.DATE_OF_SOWING || history["DATE OF SOWING"] || history.DATEOFSOWING || '';
 
         // Date Normalization (MM/DD/YYYY -> YYYY-MM-DD)
         if (plantDate && plantDate.includes('/')) {
@@ -1672,6 +1703,10 @@ function fillPolicyFromRecord(history, scope = 'all') {
                 const subTypeEl = document.getElementById('crop_subtype');
                 if (subTypeEl) subTypeEl.value = savedSubType;
             }
+
+            // Restore Farm Name
+            const farmName = history.FARMNAME || history.FarmName || history.farmName || '';
+            safeSet('f_farm_name_hidden', farmName);
         }
 
         // --- ADSS-Specific Field Restore ---
@@ -1901,12 +1936,14 @@ function populateFarmDropdown(historyArray) {
             // db.records record (CSV import — Crop)
             const farmId = farm.FARMID || farm.FarmID || farm.FarmId || farm.farmid || 'No ID';
             const area = farm.AREA || farm.Area || farm.area || '0';
-            const variety = farm['VARIETY NAME'] || farm['Variety Name'] || farm.Variety || farm.variety || '-';
+            const variety = farm.VARIETYNAME || farm.VarietyName || farm['VARIETY NAME'] || farm['Variety Name'] || farm.Variety || farm.variety || farm.VARIETY || '-';
+            const farmName = farm.FARMNAME || farm.FarmName || farm.farmName || '-';
+            const prodDate = farm.PRODUCTIONDATE || farm.ProductionDate || farm.PRODUCTION_DATE || farm['PRODUCTION DATE'] || farm.Planting || farm.DATEOFTRANSPLANT || farm['DATE OF TRANSPLANT'] || farm.DATEOFSOWING || farm['DATE OF SOWING'] || '-';
             const n = farm.NORTH || farm.North || farm.north || '—';
             const s = farm.SOUTH || farm.South || farm.south || '—';
             const e = farm.EAST || farm.East || farm.east || '—';
             const w = farm.WEST || farm.West || farm.west || '—';
-            option.textContent = `ID: ${farmId} | Area: ${area} Ha | Var: ${variety} | N:${n} S:${s} E:${e} W:${w}`;
+            option.textContent = `ID: ${farmId} | Area: ${area} Ha | Farm: ${farmName} | N:${n} S:${s} E:${e} W:${w} | Var: ${variety} | Date: ${prodDate}`;
         }
 
         select.appendChild(option);
@@ -1947,8 +1984,19 @@ async function displayEnrollmentFormUI(history) {
     safeSet('f_lname', cf.LastName);
     safeSet('f_fname', cf.FirstName);
     safeSet('f_midname', cf.MiddlName || cf.Middlename || cf.middlename);
-    safeSet('f_sex', cf.Sex || cf.sex);
-    safeSet('f_civil', cf.CivilStatus || cf.civilstatus);
+    // Normalize Sex: match select options (Male / Female) regardless of CSV casing
+    const rawSex = (cf.Sex || cf.sex || '').trim().toUpperCase();
+    const normalizedSex = rawSex === 'MALE' || rawSex === 'M' ? 'Male'
+        : rawSex === 'FEMALE' || rawSex === 'F' ? 'Female' : '';
+    safeSet('f_sex', normalizedSex);
+
+    // Normalize Civil Status: match select options regardless of CSV casing
+    const rawCivil = (cf.CivilStatus || cf.civilstatus || '').trim().toUpperCase();
+    const normalizedCivil = rawCivil === 'SINGLE' ? 'Single'
+        : rawCivil === 'MARRIED' ? 'Married'
+            : (rawCivil === 'WIDOW' || rawCivil === 'WIDOWER' || rawCivil === 'WIDOW/ER' || rawCivil === 'WIDOW/WIDOWER') ? 'Widow/er'
+                : rawCivil === 'SEPARATED' ? 'Separated' : '';
+    safeSet('f_civil', normalizedCivil);
 
     // Robust Birthdate Mapping & Normalization
     let bday = cf.Birthdate || cf.birthdate || cf.BIRTHDATE;
@@ -1990,6 +2038,8 @@ async function displayEnrollmentFormUI(history) {
     safeSet('f_bene', cf.Benefeciary);
     safeSet('f_bene_rel', cf.BeneficiaryRelationship);
     safeSet('f_bene_bday', cf.BeneficiaryBirthdate);
+    // SecondBenefeciary is ADSS-only — maps to the ADSS Primary Beneficiary input
+    safeSet('adss_ben1_name', cf.SecondBenefeciary);
     safeSet('f_mobile', cf.Mobile || cf.mobile || cf.MOBILE || cf.ContactNumber);
     safeSet('f_spouse', cf.Spouse);
     safeSet('f_sector', cf.Sector || 'N/A');
@@ -2372,7 +2422,8 @@ async function finalizeApplication(mode = 'complete') {
             ProvFarm: document.getElementById('f_farm_prov').value,
             MunFarm: document.getElementById('f_farm_mun').value,
             BrgyFarm: document.getElementById('f_farm_bgy').value,
-            StFarm: document.getElementById('f_farm_purok').value,
+            StFarm: document.getElementById('f_farm_purok').value, // For Livestock/Banca compatibility
+            FarmPurok: document.getElementById('f_farm_purok').value,
             North: document.getElementById('f_north').value,
             South: document.getElementById('f_south').value,
             East: document.getElementById('f_east').value,
@@ -2686,6 +2737,7 @@ async function generateIndividualPDF(data, returnBlob = false) {
         check('cat_self_financed', true); // Default
         txt('date_app', formatDate(new Date().toISOString().split('T')[0]));
         txt('farmer_id', data.FarmersID);
+        txt('ncfrs_id', data.NCFRSID);
 
         // 2. Personal Info
         txt('last_name', data.LastName);
@@ -3209,6 +3261,7 @@ async function previewSummary() {
                     </tr>
                     `).join('');
     previewSection.style.display = 'block';
+    makeTableResizable('preview-table');
 }
 
 async function generateSummary(fmt) {
@@ -3570,6 +3623,8 @@ function importData(type, input) {
             } else if (type === 'profiles') {
                 if (nk.toUpperCase() === 'FARMERSID') nk = 'FarmersID';
                 if (nk.toUpperCase() === 'RSBSAID') nk = 'RSBSAID';
+                if (nk.toUpperCase() === 'NCFRSID') nk = 'NCFRSID'; // handles 'NCFRS ID' (space stripped by normalizeKey)
+                if (nk.toUpperCase() === 'SECONDBENEFECIARY') nk = 'SecondBenefeciary'; // preserve casing
             }
             n[nk] = r[k];
         });
@@ -3752,6 +3807,7 @@ const DEFAULT_CONFIGS = {
         'crop_high_txt': { x: 10.02657899804349, y: 15.664397061829593, label: 'High Value Details' },
         'date_app': { x: 83.60443208012889, y: 13.914358205936232, label: 'Date of Application' },
         'farmer_id': { x: 31.01564644582508, y: 15.350183513110016, label: 'Farmer ID' },
+        'ncfrs_id': { x: 70.06182329708955, y: 94.35843290754752, label: 'NCFRS ID' },
         'last_name': { x: 18.493074739408627, y: 19.64340417433283, label: 'Last Name' },
         'first_name': { x: 31.897506872372617, y: 19.643403800750356, label: 'First Name' },
         'mid_name': { x: 46.44044316046126, y: 19.643403800750356, label: 'Middle Name' },
@@ -4644,10 +4700,6 @@ function capturePhoto() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Mirror image back if we used transform: scaleX(-1) in CSS
-    context.translate(canvas.width, 0);
-    context.scale(-1, 1);
-
     // Draw video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -4700,7 +4752,7 @@ window.addEventListener('message', async (event) => {
                 console.error("Bundle PDF Generation Error:", e);
             }
         }
-        
+
         // Send generated Blobs back to the Hub
         event.source.postMessage({
             action: 'BUNDLE_PDFS_READY',
@@ -4708,3 +4760,47 @@ window.addEventListener('message', async (event) => {
         }, '*');
     }
 });
+
+// ── Resizable Table Columns ───────────────────────────────────────────────────
+function makeTableResizable(tableId) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+
+    const ths = table.querySelectorAll('thead th');
+    ths.forEach(th => {
+        // Skip if resizer already added
+        if (th.querySelector('.col-resizer')) return;
+
+        const resizer = document.createElement('div');
+        resizer.className = 'col-resizer';
+        th.appendChild(resizer);
+
+        let startX, startWidth;
+
+        resizer.addEventListener('mousedown', function (e) {
+            startX = e.pageX;
+            startWidth = th.offsetWidth;
+            resizer.classList.add('dragging');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+
+            const onMouseMove = (e) => {
+                const newWidth = Math.max(40, startWidth + (e.pageX - startX));
+                th.style.width = newWidth + 'px';
+                th.style.minWidth = newWidth + 'px';
+            };
+
+            const onMouseUp = () => {
+                resizer.classList.remove('dragging');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+    });
+}

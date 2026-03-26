@@ -297,6 +297,18 @@ select {
     font-size: 13px;
 }
 
+/* Auto-uppercase: text and tel inputs (visually + stored value via JS) */
+input[type="text"],
+input[type="tel"] {
+    text-transform: uppercase;
+}
+
+/* Sex and Civil Status dropdowns also display in uppercase */
+#f_sex,
+#f_civil {
+    text-transform: uppercase;
+}
+
 input[readonly] {
     background: #f9f9f9;
     color: #777;
@@ -1403,8 +1415,6 @@ select:focus {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1);
-    /* Mirror effect */
 }
 
 .camera-controls {
@@ -2992,3 +3002,27 @@ footer {
 html {
     background-color: #ffffff;
 }
+
+/* ── Resizable Table Columns ─────────────────────────── */
+#preview-table th {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+}
+
+#preview-table th .col-resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 2;
+}
+
+#preview-table th .col-resizer:hover,
+#preview-table th .col-resizer.dragging {
+    background: rgba(27, 94, 32, 0.35);
+}

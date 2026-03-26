@@ -502,12 +502,12 @@
 
                     <!-- ROW 2: Names -->
                     <div class="grid-4" style="margin-top:10px;">
-                        <div class="input-group"><label>Last Name</label><input type="text" id="f_lname" readonly></div>
-                        <div class="input-group"><label>First Name</label><input type="text" id="f_fname" readonly>
+                        <div class="input-group"><label>Last Name</label><input type="text" id="f_lname"></div>
+                        <div class="input-group"><label>First Name</label><input type="text" id="f_fname">
                         </div>
                         <div class="input-group"><label>Middle Name</label><input type="text" id="f_midname"
                                 placeholder="Middle Name"></div>
-                        <div class="input-group"><label>Extension</label><input type="text" id="f_extname" readonly>
+                        <div class="input-group"><label>Extension</label><input type="text" id="f_extname">
                         </div>
                     </div>
 
@@ -540,6 +540,12 @@
                             <input type="text" id="f_brgy_farmer" list="barangay-list"
                                 placeholder="Type to search barangay..." autocomplete="off">
                             <datalist id="barangay-list"></datalist>
+                            <datalist id="relationship-list">
+                                <option value="SPOUSE">
+                                <option value="CHILD">
+                                <option value="PARENT">
+                                <option value="SIBLING">
+                            </datalist>
                         </div>
                         <div class="input-group"><label>Street/Purok</label><input type="text" id="f_st_farmer"
                                 placeholder="Enter street or purok"></div>
@@ -572,7 +578,7 @@
                     <div class="grid-3" style="margin-top:10px;">
                         <div class="input-group"><label>Beneficiary</label><input type="text" id="f_bene"></div>
                         <div class="input-group"><label>Beneficiary Relationship</label><input type="text"
-                                id="f_bene_rel"></div>
+                                id="f_bene_rel" list="relationship-list"></div>
                         <div class="input-group"><label>Beneficiary Birthdate</label><input type="date"
                                 id="f_bene_bday"></div>
                     </div>
@@ -580,7 +586,7 @@
                         <div class="input-group"><label>Guardian (if Minor/PWD)</label><input type="text"
                                 id="f_guardian" placeholder="Name of Guardian"></div>
                         <div class="input-group"><label>Guardian Relationship</label><input type="text"
-                                id="f_guardian_rel" placeholder="Relationship"></div>
+                                id="f_guardian_rel" list="relationship-list" placeholder="Relationship"></div>
                         <div class="input-group"><label>Guardian Birthdate</label><input type="date"
                                 id="f_guardian_bday"></div>
                     </div>
@@ -674,9 +680,17 @@
 
                     <div class="grid-2">
                         <div class="input-group"><label>Occupation</label><input type="text" id="adss_occupation"
-                                placeholder="Current Occupation"></div>
-                        <div class="input-group"><label>Work Address</label><input type="text" id="adss_work_addr"
-                                placeholder="Workplace Address"></div>
+                                placeholder="Current Occupation" value="FARMING"></div>
+                        <div class="input-group">
+                            <label>Work Address
+                                <span style="font-weight:normal; font-size:10px; margin-left:8px;">
+                                    <input type="checkbox" id="adss_same_home" onchange="fillSameAsHome(this)"
+                                        style="width:13px; height:13px; vertical-align:middle; margin-right:3px;">
+                                    <span style="text-transform:none; cursor:pointer;" onclick="document.getElementById('adss_same_home').click()">Same as Home Address</span>
+                                </span>
+                            </label>
+                            <input type="text" id="adss_work_addr" placeholder="Workplace Address">
+                        </div>
                     </div>
 
                     <div class="grid-2" style="margin-top:10px;">
@@ -695,7 +709,7 @@
                         <div class="grid-3">
                             <div class="input-group"><label>Name</label><input type="text" id="adss_ben1_name">
                             </div>
-                            <div class="input-group"><label>Relationship</label><input type="text" id="adss_ben1_rel">
+                            <div class="input-group"><label>Relationship</label><input type="text" id="adss_ben1_rel" list="relationship-list">
                             </div>
                             <div class="input-group"><label>Birthdate</label><input type="date" id="adss_ben1_bday">
                             </div>
@@ -707,7 +721,7 @@
                         <div class="grid-3">
                             <div class="input-group"><label>Name</label><input type="text" id="adss_ben2_name">
                             </div>
-                            <div class="input-group"><label>Relationship</label><input type="text" id="adss_ben2_rel">
+                            <div class="input-group"><label>Relationship</label><input type="text" id="adss_ben2_rel" list="relationship-list">
                             </div>
                             <div class="input-group"><label>Birthdate</label><input type="date" id="adss_ben2_bday">
                             </div>
@@ -919,7 +933,7 @@
                         <div class="input-group"><label>Beneficiary (Primary)</label><input type="text"
                                 id="banca_bene_primary" placeholder="Full Name"></div>
                         <div class="input-group"><label>Relationship</label><input type="text" id="banca_bene_rel"
-                                placeholder="e.g. Spouse"></div>
+                                list="relationship-list" placeholder="e.g. Spouse"></div>
                     </div>
 
                     <div class="section-title" style="margin-top:20px; font-size:11px;">Mortgage Details (If
@@ -1609,6 +1623,50 @@
             </div>
         </div>
     </div>
+
+    <!-- PDF CALIBRATION OVERLAY -->
+    <div id="calibrationOverlay">
+        <div class="cal-controls">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <h3 style="margin:0; font-size:16px; color:var(--primary);">Calibration Mode</h3>
+                <select id="calibLineSelect" onchange="onCalibLineChange()" 
+                    style="padding:5px; border-radius:4px; border:1px solid #ccc; font-weight:bold;">
+                    <option value="Crop">Crop Insurance</option>
+                    <option value="ADSS">ADSS Insurance</option>
+                    <option value="Livestock">Livestock Insurance</option>
+                    <option value="Banca">Banca Insurance</option>
+                </select>
+                <select id="calibSectionSelect" onchange="renderCalibration()" 
+                    style="padding:5px; border-radius:4px; border:1px solid #ccc;">
+                    <option value="all">All Fields</option>
+                    <option value="profile">Farmer Profile</option>
+                    <option value="farm">Farm Details</option>
+                    <option value="beneficiary">Beneficiary/Guardian</option>
+                    <option value="consent">Consents/MOP</option>
+                    <option value="signatures">Signatures</option>
+                </select>
+                <label style="display:flex; align-items:center; gap:5px; font-size:12px; cursor:pointer;">
+                    <input type="checkbox" onchange="toggleLabels(this)"> Show All Labels
+                </label>
+            </div>
+            <div class="cal-btn-group">
+                <button class="btn btn-secondary" onclick="resetCalibration()" style="font-size:12px;">Reset</button>
+                <button class="btn btn-secondary" onclick="exportLayout()" style="font-size:12px;">Export JSON</button>
+                <button class="btn btn-secondary" onclick="triggerImportLayout()" style="font-size:12px;">Import JSON</button>
+                <button class="btn btn-secondary" onclick="triggerImportTemplate()" style="font-size:12px;">Import Template</button>
+                <button class="btn btn-primary" onclick="saveCalibration()" style="font-size:12px; background:var(--primary); color:white;">Save Changes</button>
+                <button class="btn btn-danger" onclick="toggleCalibration()" style="font-size:12px; background:#f44336; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Close</button>
+            </div>
+            <!-- Hidden Inputs for Import -->
+            <input type="file" id="importLayoutInput" style="display:none;" onchange="importLayout(event)" accept=".json">
+            <input type="file" id="importTemplateInput" style="display:none;" onchange="importTemplate(event)" accept="image/*">
+        </div>
+        <div id="calWrapper">
+            <img id="calBgImage" class="cal-bg-img">
+            <!-- Dots injected by renderCalibration() -->
+        </div>
+    </div>
+
 
     <script src="pdf_templates.js"></script>
     <script src="app_updates.js"></script>

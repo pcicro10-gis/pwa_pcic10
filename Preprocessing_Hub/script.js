@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const animalTypeFilter = document.getElementById('animal-type-filter');
     const classificationFilter = document.getElementById('classification-filter');
 
+    // Sort State
+    let currentSort = { col: null, dir: 'asc' };
+
     // Banca Filters
     const boatTypeFilter = document.getElementById('boat-type-filter');
     const boatMaterialFilter = document.getElementById('boat-material-filter');
@@ -454,12 +457,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return headers.find(h => h.toLowerCase().trim() === target.toLowerCase().trim()) || target;
         });
 
-        tableHead.innerHTML = `<tr>${displayHeaders.map(h => {
+        tableHead.innerHTML = `<tr>${displayHeaders.map((h, colIdx) => {
             if (h === 'Checkbox') {
                 return `<th style="width: 40px; text-align: center;"><input type="checkbox" id="select-all"></th>`;
             }
             const extraStyle = h === 'Farmer Name' ? 'style="min-width: 250px; width: 250px;"' : '';
-            return `<th title="${h}" ${extraStyle}>${h}</th>`;
+            const isActive = currentSort.col === h;
+            const arrow = isActive ? (currentSort.dir === 'asc' ? '▲' : '▼') : '⇅';
+            const arrowColor = isActive ? '#ffd600' : 'rgba(255,255,255,0.5)';
+            // Use backticks for col name parameter and escape single quotes just in case
+            const escapedCol = h.replace(/'/g, "\\'");
+            return `<th title="${h}" ${extraStyle} style="cursor:pointer; white-space:nowrap; user-select:none; transition: background 0.2s;" onclick="window._sortPreprocessTable('${escapedCol}')">
+                <span style="display:inline-block; margin-right:5px;">${h}</span>
+                <span style="font-size:10px; color:${arrowColor};">${arrow}</span>
+            </th>`;
         }).join('')}</tr>`;
 
         if (data.length === 0) {
@@ -507,6 +518,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tableBody.appendChild(infoRow);
         }
     }
+
+    // Expose sort trigger globally so inline onclick works inside the closure
+    window._sortPreprocessTable = function(col) {
+        if (currentSort.col === col) {
+            currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.col = col;
+            currentSort.dir = 'asc';
+        }
+        if (sortFilter) sortFilter.value = 'default';
+        updateDashboard();
+    };
 
     // --- Dynamic Filter Logic ---
 
@@ -562,7 +585,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return true; // e.g. for ADSS, only dependent on InsuranceLine
         });
 
-        if (sortValue === 'lastname') {
+        if (currentSort.col) {
+            const col = currentSort.col;
+            const dir = currentSort.dir === 'asc' ? 1 : -1;
+            tableData.sort((a, b) => {
+                let va = a[col] === null || a[col] === undefined ? '' : a[col];
+                let vb = b[col] === null || b[col] === undefined ? '' : b[col];
+
+                // 1. Numeric
+                const na = parseFloat(String(va).replace(/,/g, ''));
+                const nb = parseFloat(String(vb).replace(/,/g, ''));
+                if (!isNaN(na) && !isNaN(nb)) return dir * (na - nb);
+
+                // 2. Date
+                const da = new Date(va), db = new Date(vb);
+                if (!isNaN(da.getTime()) && !isNaN(db.getTime())) return dir * (da - db);
+
+                // 3. String
+                return dir * String(va).localeCompare(String(vb), undefined, { sensitivity: 'base' });
+            });
+        } else if (sortValue === 'lastname') {
             tableData.sort((a, b) => {
                 const nameA = String(a['Farmer Name'] || '').toLowerCase();
                 const nameB = String(b['Farmer Name'] || '').toLowerCase();
@@ -778,7 +820,12 @@ document.addEventListener('DOMContentLoaded', () => {
     boatTypeFilter.addEventListener('change', updateDashboard);
     boatMaterialFilter.addEventListener('change', updateDashboard);
 
-    if (sortFilter) sortFilter.addEventListener('change', updateDashboard);
+    if (sortFilter) {
+        sortFilter.addEventListener('change', () => {
+            currentSort.col = null;
+            updateDashboard();
+        });
+    }
 
     // Checkbox Event Delegation for Bulk Actions
     const bulkActionsBar = document.getElementById('bulk-actions-bar');
