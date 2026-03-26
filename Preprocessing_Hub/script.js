@@ -56,8 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return age;
     }
 
-    // Initialize IDB Storage
-    loadFromStorage();
+    // Initialize IDB Storage and check for pending transfers
+    loadFromStorage().then(() => {
+        const pendingTransfer = localStorage.getItem('pendingCsvTransfer');
+        if (pendingTransfer) {
+            localStorage.removeItem('pendingCsvTransfer');
+            const transferFile = new File([pendingTransfer], "Transfer.csv", { type: "text/csv" });
+            handleFiles([transferFile]);
+        }
+    });
 
     // Make empty activity table cells editable for UI functionality
     document.querySelectorAll('.hvc-activity-table tbody td:not(:first-child)').forEach(td => {
@@ -111,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function processFiles(files) {
+        dropZone.classList.remove('hidden');
+        dashboard.classList.add('hidden');
+
         let processedCount = 0;
         let newRecords = [];
         let newHeaders = [];
@@ -309,7 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-
+        document.getElementById('csv-input').addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
 
         initializeDashboard();
     }
@@ -583,6 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render Table
         renderTable(tableData, insuranceValue);
+        window.lastFilteredData = tableData;
 
         // Update bulk actions bar based on selected rows
         if (typeof updateBulkBar === 'function') {
@@ -1595,6 +1608,228 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    // --- BUNDLE VAULT LOGIC ---
+    const saveBundleBtn = document.getElementById('save-bundle-btn');
+    const openVaultBtn = document.getElementById('open-vault-btn');
+    const vaultModal = document.getElementById('bundles-vault-modal');
+    const progModal = document.getElementById('bundle-progress-modal');
+    const progText = document.getElementById('bundle-progress-text');
+    const progBar = document.getElementById('bundle-progress-bar');
+    const closeVaultBtn = document.getElementById('close-bundles-modal');
+    const bundlesTbody = document.getElementById('bundles-tbody');
+
+    if (saveBundleBtn) saveBundleBtn.addEventListener('click', async () => {
+        if (!window.lastFilteredData || window.lastFilteredData.length === 0) {
+            alert("No farmers filtered to bundle."); return;
+        }
+
+        // 1. Show Progress
+        progModal.style.display = 'flex';
+        progText.innerText = 'Requesting PDFs from Main App...';
+        progBar.style.width = '10%';
+
+        // 2. Request PDFs
+        const pdfs = await requestPDFsFromMainApp(window.lastFilteredData);
+        if (!pdfs || pdfs.length === 0) {
+            progModal.style.display = 'none';
+            alert("Failed to generate PDFs. Bridge might be disconnected.");
+            return;
+        }
+
+        progText.innerText = 'Compressing Bundle...';
+        progBar.style.width = '60%';
+
+        // 3. Zip it Setup
+        const zip = new JSZip();
+        
+        // Add PDFs
+        pdfs.forEach((pdfObj) => {
+            zip.file(pdfObj.name, pdfObj.blob);
+        });
+
+        // Add CSV
+        const csvContent = Papa.unparse(window.lastFilteredData);
+        zip.file("Filtered_Farmers_List.csv", csvContent);
+        
+        // Add Preprocessing Report PDF
+        const reportElement = document.querySelector('.modal-body');
+        if (reportElement) {
+            progText.innerText = 'Rendering Report PDF...';
+            
+            // Check orientation based on report type
+            const reportTypeSelector = document.getElementById('report-type-selector');
+            const isLandscape = reportTypeSelector && reportTypeSelector.value === 'rice-corn';
+            const pdfOrientation = isLandscape ? 'landscape' : 'portrait';
+            const winWidth = isLandscape ? 1122 : 794;
+
+            try {
+                // Temporarily force max-width to none so html2canvas doesn't truncate based on responsive CSS
+                const originalMaxWidth = reportElement.style.maxWidth;
+                reportElement.style.maxWidth = 'none';
+
+                const pdfBlob = await html2pdf().from(document.body).set({
+                    margin: [10, 5, 10, 5],
+                    filename: 'Preprocessing_Report.pdf',
+                    image: { type: 'jpeg', quality: 1.0 },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+                    html2canvas: { 
+                        scale: 2,
+                        windowWidth: winWidth,
+                        useCORS: true,
+                        onclone: function(clonedDoc) {
+                            // Hide everything except the modal body
+                            clonedDoc.querySelector('.app-container').style.display = 'none';
+                            clonedDoc.querySelector('.modal-actions').style.display = 'none';
+                            
+                            // Re-enforce the modal layout
+                            const printModal = clonedDoc.getElementById('print-modal');
+                            printModal.style.position = 'static';
+                            printModal.style.width = '100%';
+                            printModal.style.background = 'white';
+                            printModal.classList.remove('hidden');
+
+                            // Find and extract `@media print` CSS and inject it as standard CSS inside the clone
+                            let printStyles = '';
+                            for (let i = 0; i < document.styleSheets.length; i++) {
+                                try {
+                                    const rules = document.styleSheets[i].cssRules;
+                                    for (let j = 0; j < rules.length; j++) {
+                                        if (rules[j].conditionText === 'print') {
+                                            for (let k = 0; k < rules[j].cssRules.length; k++) {
+                                                printStyles += rules[j].cssRules[k].cssText + '\\n';
+                                            }
+                                        }
+                                    }
+                                } catch(e) { /* CORS cross-domain stylesheet exception handler */ }
+                            }
+                            const styleTag = clonedDoc.createElement('style');
+                            styleTag.innerHTML = printStyles;
+                            clonedDoc.head.appendChild(styleTag);
+                        }
+                    },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: pdfOrientation }
+                }).output('blob');
+                
+                reportElement.style.maxWidth = originalMaxWidth;
+                
+                zip.file("Preprocessing_Report.pdf", pdfBlob);
+            } catch (e) {
+                console.error("HTML2PDF Error:", e);
+                // Fallback to HTML if generation completely fails
+                zip.file("Preprocessing_Report.html", reportElement.innerHTML);
+            }
+        }
+
+        progBar.style.width = '90%';
+        progText.innerText = 'Saving to Offline Vault...';
+
+        // 4. Zip compilation
+        const zipBlob = await zip.generateAsync({type:"blob"});
+
+        // 5. Store to IDB
+        let bundles = await idbKeyval.get('agriData_bundles') || [];
+        const defaultName = "Bundle_" + new Date().toISOString().slice(0, 10).replace(/-/g,'');
+        
+        // Ensure UI doesn't block if prompt is backgrounded
+        setTimeout(async () => {
+            const bundleName = prompt("Enter a name for this Bundle:", defaultName);
+            if (!bundleName) {
+                progModal.style.display = 'none';
+                return; // Cancelled
+            }
+
+            bundles.push({
+                id: "bundle_" + Date.now(),
+                timestamp: Date.now(),
+                name: bundleName,
+                farmerCount: window.lastFilteredData.length,
+                sizeBytes: zipBlob.size,
+                zipBlob: zipBlob
+            });
+
+            await idbKeyval.set('agriData_bundles', bundles);
+
+            progBar.style.width = '100%';
+            setTimeout(() => {
+                progModal.style.display = 'none';
+                alert("Bundle saved successfully to the Offline Vault!");
+            }, 300);
+        }, 100);
+    });
+
+    function requestPDFsFromMainApp(farmersData) {
+        return new Promise((resolve) => {
+            const listener = (event) => {
+                if (event.data && event.data.action === 'BUNDLE_PDFS_READY') {
+                    window.removeEventListener('message', listener);
+                    resolve(event.data.pdfs);
+                }
+            };
+            window.addEventListener('message', listener);
+            window.parent.postMessage({
+                action: 'GENERATE_PWA_BUNDLE',
+                farmersData: farmersData
+            }, '*');
+        });
+    }
+
+    if (openVaultBtn) openVaultBtn.addEventListener('click', async () => {
+        vaultModal.style.display = 'block';
+        let bundles = await idbKeyval.get('agriData_bundles') || [];
+        
+        bundlesTbody.innerHTML = '';
+        if (bundles.length === 0) {
+            bundlesTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No bundles found.</td></tr>';
+            return;
+        }
+
+        bundles.sort((a,b) => b.timestamp - a.timestamp).forEach(b => {
+            const tr = document.createElement('tr');
+            const dateStr = new Date(b.timestamp).toLocaleString();
+            const sizeMB = (b.sizeBytes / 1024 / 1024).toFixed(2) + ' MB';
+            tr.innerHTML = `
+                <td>${dateStr}</td>
+                <td><strong>${b.name}</strong></td>
+                <td>${b.farmerCount}</td>
+                <td>${sizeMB}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm dl-btn" data-id="${b.id}" style="padding:4px 8px; font-size:12px;">Download</button>
+                    <button class="btn btn-danger btn-sm del-btn" data-id="${b.id}" style="padding:4px 8px; font-size:12px; margin-left:5px;">Delete</button>
+                </td>
+            `;
+            bundlesTbody.appendChild(tr);
+        });
+
+        // Attach listeners
+        document.querySelectorAll('.dl-btn').forEach(btn => btn.addEventListener('click', (e) => downloadBundle(e.target.dataset.id)));
+        document.querySelectorAll('.del-btn').forEach(btn => btn.addEventListener('click', (e) => deleteBundle(e.target.dataset.id)));
+    });
+
+    if (closeVaultBtn) closeVaultBtn.addEventListener('click', () => {
+        vaultModal.style.display = 'none';
+    });
+
+    async function downloadBundle(id) {
+        let bundles = await idbKeyval.get('agriData_bundles') || [];
+        const bundle = bundles.find(b => b.id === id);
+        if(!bundle) return;
+
+        const url = URL.createObjectURL(bundle.zipBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = bundle.name + ".zip";
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function deleteBundle(id) {
+        if(!confirm("Are you sure you want to permanently delete this bundle?")) return;
+        let bundles = await idbKeyval.get('agriData_bundles') || [];
+        bundles = bundles.filter(b => b.id !== id);
+        await idbKeyval.set('agriData_bundles', bundles);
+        openVaultBtn.click(); // refresh modal
     }
 
 });

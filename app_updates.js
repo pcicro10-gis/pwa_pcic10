@@ -6,6 +6,11 @@ const APP_ANNOUNCEMENT = `⚠️ <strong>This application is under it's final pi
 promptly. Thank you.`;
 
 const APP_RELEASE_NOTES = `
+<strong>v1.4.2 (2026-03-25)</strong>
+<ul style="margin-top: 5px; margin-bottom: 15px;">
+    <li>[FIX] Added missing files for the Preprocessing Hub and other utility scripts to offline cache, allowing full offline usage of the Hub.</li>
+</ul>
+
 <strong>v1.4.1 (2026-03-17)</strong>
 <ul style="margin-top: 5px; margin-bottom: 15px;">
     <li>[FEAT] History redownload limits removed. Download any past application PDF.</li>

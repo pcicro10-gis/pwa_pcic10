@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pcic-app-v1.4.1';
+const CACHE_NAME = 'pcic-app-v1.4.2';
 const urlsToCache = [
     'index.html',
     'style.css',
@@ -14,6 +14,16 @@ const urlsToCache = [
     'lib/jspdf.js',
     'lib/jspdf-autotable.js',
     'lib/pdf-lib.js',
+    'lib/idb-keyval.js',
+    'lib/jszip.min.js',
+    'lib/html2pdf.js',
+    'farm_selector_functions.js',
+    'db_manager.js',
+    'csv_handler.js',
+    'address_autocomplete.js',
+    'Preprocessing_Hub/index.html',
+    'Preprocessing_Hub/script.js',
+    'Preprocessing_Hub/style.css',
     'lib/font-awesome/css/all.min.css',
     'lib/font-awesome/webfonts/fa-solid-900.woff2',
     'lib/font-awesome/webfonts/fa-solid-900.ttf',

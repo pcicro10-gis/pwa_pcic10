@@ -3,7 +3,7 @@ function toggleSidebar() {
 }
 
 // === VERSION CONTROL ===
-const APP_VERSION = "1.4.1"; // Single source of truth
+const APP_VERSION = "1.4.2"; // Single source of truth
 // =======================
 
 const getDeviceID = () => {
@@ -2561,7 +2561,7 @@ async function finalizeApplication(mode = 'complete') {
     }, 500);
 }
 
-async function generateIndividualPDF(data) {
+async function generateIndividualPDF(data, returnBlob = false) {
     console.log("Generating Individual PDF for:", data.LastName);
     const line = data.InsuranceLine || 'Crop';
     const { jsPDF } = window.jspdf; // CRITICAL: Ensure constructor via window.jspdf
@@ -2893,6 +2893,7 @@ async function generateIndividualPDF(data) {
         }
 
         const pdfBlob = doc.output('blob');
+        if (returnBlob) return { blob: pdfBlob, name: suggestedName };
         await saveBlob(pdfBlob, suggestedName);
 
     } catch (err) {
@@ -3241,7 +3242,7 @@ async function generateSummary(fmt) {
 
     const fname = `SUMMARY_${c}_${filtered.length}_${new Date().toISOString().slice(0, 10)}_${cic}`;
 
-    if (fmt === 'csv') {
+    if (fmt === 'csv' || fmt === 'transfer') {
         // UNIFIED CSV Generation (Reverted & Enhanced per User Request)
 
         // Comprehensive Master Header List
@@ -3407,6 +3408,19 @@ async function generateSummary(fmt) {
         });
 
         const csvContent = csvRows.join("\n");
+        if (fmt === 'transfer') {
+            try {
+                localStorage.setItem('pendingCsvTransfer', csvContent);
+            } catch (e) {
+                console.error("localStorage quota exceeded for transfer", e);
+                alert("Data is too large for fast transfer. Please Export CSV instead.");
+            }
+            const hubIframe = document.querySelector('#view-preprocessing iframe');
+            if (hubIframe) hubIframe.src = hubIframe.src; // Safer reload without CORS/file:// blocks
+            showView('preprocessing');
+            return;
+        }
+
         const blob = new Blob([csvContent], { type: 'text/csv' });
         await saveBlob(blob, fname + ".csv");
 
@@ -4668,5 +4682,29 @@ document.addEventListener('fullscreenchange', () => {
         } else {
             icon.className = 'fas fa-expand';
         }
+    }
+});
+
+// --- Preprocessing Hub Bundle Bridge ---
+window.addEventListener('message', async (event) => {
+    if (event.data && event.data.action === 'GENERATE_PWA_BUNDLE') {
+        const farmersData = event.data.farmersData;
+        const results = [];
+        // Generate PDFs in background
+        for (let i = 0; i < farmersData.length; i++) {
+            try {
+                // Return Blob Instead of Downloading
+                const res = await generateIndividualPDF(farmersData[i], true);
+                if (res) results.push(res);
+            } catch (e) {
+                console.error("Bundle PDF Generation Error:", e);
+            }
+        }
+        
+        // Send generated Blobs back to the Hub
+        event.source.postMessage({
+            action: 'BUNDLE_PDFS_READY',
+            pdfs: results
+        }, '*');
     }
 });

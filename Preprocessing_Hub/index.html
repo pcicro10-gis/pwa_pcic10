@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="../lib/papaparse.min.js"></script>
     <script src="../lib/idb-keyval.js"></script>
+    <script src="../lib/jszip.min.js"></script>
+    <script src="../lib/html2pdf.js"></script>
     <!-- iOS PWA Fullscreen Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -112,8 +114,15 @@
                         </select>
                         <button id="reset-filters-btn" class="btn">Reset Filters</button>
                         <div class="stats-badge" id="row-count">0 Rows</div>
-                        <button class="btn btn-danger" id="clear-data-btn" style="margin-left: auto;">Clear
-                            Data</button>
+                        <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+                            <button class="btn btn-secondary" id="open-vault-btn" style="background:#555; color:white; border:none;">
+                                <i class="fas fa-archive"></i> Bundles Vault
+                            </button>
+                            <button class="btn btn-primary" id="add-csv-btn" onclick="document.getElementById('csv-input').click()">
+                                Add CSV
+                            </button>
+                            <button class="btn btn-danger" id="clear-data-btn">Clear Data</button>
+                        </div>
                     </div>
                 </div>
 
@@ -135,6 +144,9 @@
         <div id="print-modal" class="modal hidden">
             <div class="modal-content">
                 <div class="modal-actions no-print">
+                    <button class="btn btn-primary" id="save-bundle-btn" style="background:#0a0; border:none; color:white; margin-right: 15px;">
+                        <i class="fas fa-box-open"></i> Save Bundle
+                    </button>
                     <button id="modal-print-btn" class="btn"
                         style="background-color: var(--primary-color); color: white;">Print</button>
                     <button id="modal-close-btn" class="btn"
@@ -2192,6 +2204,41 @@
                 </div>
             </div>
         </div>
+
+    <!-- Bundles Vault Modal -->
+    <div id="bundles-vault-modal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background:white; margin:5% auto; padding:20px; width:80%; max-width:800px; border-radius:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px;">
+                <h2 style="margin:0;"><i class="fas fa-archive"></i> Offline Bundles Vault</h2>
+                <span id="close-bundles-modal" style="font-size:24px; cursor:pointer;">&times;</span>
+            </div>
+            <div style="max-height:60vh; overflow-y:auto;">
+                <table class="data-table" style="width:100%; text-align:left;">
+                    <thead>
+                        <tr>
+                            <th>Date Created</th>
+                            <th>Bundle Name</th>
+                            <th>Farmers</th>
+                            <th>Size</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bundles-tbody">
+                        <tr><td colspan="5" style="text-align:center;">No bundles found.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bundle Progress Modal -->
+    <div id="bundle-progress-modal" class="modal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); flex-direction:column; justify-content:center; align-items:center;">
+        <h2 style="color:white; margin-bottom:20px;"><i class="fas fa-box-open"></i> Packing Offline Bundle...</h2>
+        <div style="width:50%; max-width:400px; background:#333; height:20px; border-radius:10px; overflow:hidden;">
+            <div id="bundle-progress-bar" style="width:0%; height:100%; background:#0a0; transition:width 0.3s;"></div>
+        </div>
+        <p id="bundle-progress-text" style="color:#aaa; margin-top:10px;">Initializing Request Array...</p>
+    </div>
 
         <script src="script.js"></script>
         <script>
