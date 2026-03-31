@@ -478,27 +478,28 @@
                     <input type="hidden" id="f_st_farm">
                     <div class="section-title">Farmer Information</div>
 
-                    <div id="photo-preview-wrap">
-                        <div id="farmer-photo-preview">
-                            <i class="fas fa-user"></i>
+                    <!-- ROW 1: Photo and ID Numbers (Maximized Space) -->
+                    <div class="farmer-id-photo-row">
+                        <div id="photo-preview-wrap">
+                            <div id="farmer-photo-preview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="input-group">
+                                <label>Farmer Photo</label>
+                                <button type="button" class="btn-camera" onclick="openCamera()">
+                                    <i class="fas fa-camera"></i> Take Photo
+                                </button>
+                                <!-- Enhanced: Fallback input for mobile/tablets in insecure contexts -->
+                                <input type="file" id="f_photo_fallback" accept="image/*" capture="environment"
+                                    style="display: none;" onchange="handleFallbackPhoto(this)">
+                                <input type="hidden" id="f_photo_data">
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label>Farmer Photo</label>
-                            <button type="button" class="btn-camera" onclick="openCamera()">
-                                <i class="fas fa-camera"></i> Take Photo
-                            </button>
-                            <!-- Enhanced: Fallback input for mobile/tablets in insecure contexts -->
-                            <input type="file" id="f_photo_fallback" accept="image/*" capture="environment"
-                                style="display: none;" onchange="handleFallbackPhoto(this)">
-                            <input type="hidden" id="f_photo_data">
+                        <div class="grid-3 id-numbers-inline">
+                            <div class="input-group"><label>Farmer ID</label><input type="text" id="f_id" readonly></div>
+                            <div class="input-group"><label>RSBSA NO.</label><input type="text" id="f_rsbsa"></div>
+                            <div class="input-group"><label>NCFRS ID</label><input type="text" id="f_ncfrs"></div>
                         </div>
-                    </div>
-
-                    <!-- ROW 1: ID Numbers -->
-                    <div class="grid-3">
-                        <div class="input-group"><label>Farmer ID</label><input type="text" id="f_id" readonly></div>
-                        <div class="input-group"><label>RSBSA NO.</label><input type="text" id="f_rsbsa"></div>
-                        <div class="input-group"><label>NCFRS ID</label><input type="text" id="f_ncfrs"></div>
                     </div>
 
                     <!-- ROW 2: Names -->
@@ -1583,8 +1584,7 @@
 
 
         <!-- FOOTER -->
-        <footer
-            style="text-align: center; padding: 10px; font-size: 10px; color: #999; margin-top: auto; border-top: 1px solid #eee; background: #fff; width: 100%;">
+        <footer class="global-footer">
             For PCIC and its partner Underwriters use Only.
         </footer>
     </div> <!-- End #workspace -->

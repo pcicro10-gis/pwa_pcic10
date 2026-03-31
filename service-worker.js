@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pcic-app-v1.4.3e';
+const CACHE_NAME = 'pcic-app-v1.4.3h';
 const urlsToCache = [
     'index.html',
     'css/style.css',
@@ -9,6 +9,7 @@ const urlsToCache = [
     'asset/logo.png',
     'asset/sidebar_logo.png',
     'asset/welcome_dashboard_bg.png',
+    'asset/footer_banner.png',
     'asset/paddy_bg.png',
     'lib/dexie.js',
     'lib/papaparse.min.js',

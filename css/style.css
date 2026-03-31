@@ -1241,6 +1241,26 @@ select:focus {
         flex-shrink: 0;
     }
 
+    .ug-modal-header {
+        padding: 10px;
+    }
+
+    /* Mobile handling for the optimized ID/Photo row */
+    .farmer-id-photo-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .id-numbers-inline {
+        width: 100%;
+        grid-template-columns: 1fr; /* Stack the grids on small mobile */
+    }
+
+    #photo-preview-wrap {
+        justify-content: center;
+    }
+
     .sidebar-header {
         padding: 10px;
         font-size: 14px;
@@ -1439,11 +1459,23 @@ select:focus {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.farmer-id-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: #f9fafb;
+    border: 1px solid #edf2f7;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.id-numbers-inline {
+    flex: 1;
 }
 
 #farmer-photo-preview {
@@ -2035,11 +2067,19 @@ tbody tr:hover {
     /* Stronger teal hover */
 }
 
-footer {
-    margin-top: 4rem;
+footer, .global-footer {
     text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
+    padding: 12px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95) !important;
+    margin-top: auto;
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../asset/footer_banner.png');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    border-top: 2px solid var(--accent);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
 
 /* Scrollbar customization */
