@@ -1672,6 +1672,21 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("No farmers filtered to bundle."); return;
         }
 
+        // --- NEW: Capture Preprocessing State ---
+        const checkedDefs = Array.from(document.querySelectorAll('.deficiency-cb:checked')).map(cb => cb.value);
+        const defString = checkedDefs.join(', ');
+        const processedByEl = Array.from(document.querySelectorAll('.sig-line')).find(el => el.value && el.value.trim() !== '');
+        const processedBy = processedByEl ? processedByEl.value.trim() : 'HUB OP';
+        const status = checkedDefs.length > 0 ? 'DEFICIENT' : 'PROCESSED';
+        const ts = new Date().toISOString();
+
+        window.lastFilteredData.forEach(row => {
+            row.Deficiencies = defString;
+            row.Status = status;
+            row.ProcessedBy = processedBy;
+            row.DateProcessed = ts;
+        });
+
         // 1. Show Progress
         progModal.style.display = 'flex';
         progText.innerText = 'Requesting PDFs from Main App...';
@@ -1696,15 +1711,60 @@ document.addEventListener('DOMContentLoaded', () => {
             zip.file(pdfObj.name, pdfObj.blob);
         });
 
-        // Add CSV
-        const csvContent = Papa.unparse(window.lastFilteredData);
-        zip.file("Filtered_Farmers_List.csv", csvContent);
+        // Add CSV (Commodity Specific)
+        const reportType = document.getElementById('report-type-selector') ? document.getElementById('report-type-selector').value : 'rice-corn';
+        const summaryHeaders = {
+            'rice-corn': 'FarmersID,RSBSAID,LastName,FirstName,MiddlName,ExtName,Birthdate,Sex,CivilStatus,ProvFarmer,MunFarmer,BrgyFarmer,StFarmer,Mobile,Spouse,Sector,Beneficiary,BeneRelationship,BeneBirthdate,PaymentMethod,Account,InsuranceLine,FarmID,Georef,FarmName,ProvFarm,MunFarm,BrgyFarm,StFarm,North,South,East,West,Area,CropType,Month,Variety,TypePlanting,Sowing,Planting,Crop AmountCover,TreesHills,timestamp',
+            'hvc': 'FarmersID,RSBSAID,LastName,FirstName,MiddlName,ExtName,Birthdate,Sex,CivilStatus,ProvFarmer,MunFarmer,BrgyFarmer,StFarmer,Mobile,Spouse,Sector,Beneficiary,BeneRelationship,BeneBirthdate,PaymentMethod,Account,InsuranceLine,FarmID,Georef,FarmName,ProvFarm,MunFarm,BrgyFarm,StFarm,North,South,East,West,Area,CropType,Month,Variety,TypePlanting,Sowing,Planting,Crop AmountCover,TreesHills,timestamp',
+            'tir': 'FarmersID,RSBSAID,LastName,FirstName,MiddlName,ExtName,Birthdate,Sex,CivilStatus,ProvFarmer,MunFarmer,BrgyFarmer,StFarmer,Mobile,Spouse,Sector,Beneficiary,BeneRelationship,BeneBirthdate,PaymentMethod,Account,InsuranceLine,Guardian,GuardianRelationship,GuardianBirthdate,BeneSecondary,BeneSecondaryRel,BeneSecondaryBday,Premium,ADSS AmountCover,timestamp',
+            'livestock': 'FarmersID,RSBSAID,LastName,FirstName,MiddlName,ExtName,Birthdate,Sex,CivilStatus,ProvFarmer,MunFarmer,BrgyFarmer,StFarmer,Mobile,Spouse,Sector,Beneficiary,BeneRelationship,BeneBirthdate,PaymentMethod,Account,InsuranceLine,Livestock_Street_Sitio,Livestock_Barangay,Livestock_Municipality,Livestock_Province,AnimalType,Classification,Eartag,MalePop,FemalePop,Age,Dateofbirth,Breed,Color,Price,TotalBirdsPop,PurchaseDate,Livestock AmountCover,PeriodFrom,PeriodTo,timestamp',
+            'fisheries': 'FarmersID,RSBSAID,LastName,FirstName,MiddlName,ExtName,Birthdate,Sex,CivilStatus,ProvFarmer,MunFarmer,BrgyFarmer,StFarmer,Mobile,Spouse,Sector,Beneficiary,BeneRelationship,BeneBirthdate,PaymentMethod,Account,InsuranceLine,BoatType,BoatMaterial,HullNo,ChassisNo,Usage,Banca Color,BoatAge,Others,Height,Banca_Width,Banca_Length,BoatLocation,Banca AmountCover,timestamp',
+            'noncrop': 'FarmersID,RSBSAID,LastName,FirstName,MiddlName,ExtName,Birthdate,Sex,CivilStatus,ProvFarmer,MunFarmer,BrgyFarmer,StFarmer,Mobile,Spouse,Sector,Beneficiary,BeneRelationship,BeneBirthdate,PaymentMethod,Account,InsuranceLine,BoatType,BoatMaterial,HullNo,ChassisNo,Usage,Banca Color,BoatAge,Others,Height,Banca_Width,Banca_Length,BoatLocation,Banca AmountCover,timestamp'
+        };
+        const currentHeaderString = summaryHeaders[reportType] || summaryHeaders['rice-corn'];
+        
+        // Ensure Preprocessing columns are included
+        const finalHeaders = currentHeaderString.split(',');
+        finalHeaders.push('Deficiencies', 'Status', 'ProcessedBy', 'DateProcessed');
+
+        const csvRows = window.lastFilteredData.map(row => {
+            return finalHeaders.map(header => {
+                let cellValue = row[header] !== undefined ? row[header] : '';
+                if (cellValue === '' || cellValue === undefined) {
+                    const actualKey = Object.keys(row).find(k => k.toLowerCase().trim() === header.toLowerCase().trim());
+                    if (actualKey) cellValue = row[actualKey];
+                }
+                const escaped = String(cellValue).replace(/"/g, '""');
+                return `"${escaped}"`;
+            }).join(',');
+        });
+        
+        const csvContent = [finalHeaders.join(','), ...csvRows].join('\n');
+        
+        // Dynamic CSV Name (e.g. Crop_Rice.csv)
+        const firstRow = window.lastFilteredData[0] || {};
+        const dynLine = firstRow.InsuranceLine || 'UnknownLine';
+        const dynCmdty = firstRow.CropType || firstRow.AnimalType || firstRow.BoatType || 'UnknownCommodity';
+        const csvFileName = `${dynLine}_${dynCmdty}.csv`;
+        
+        zip.file(csvFileName, csvContent);
         
         // Add Preprocessing Report PDF
         const reportElement = document.querySelector('.modal-body');
         if (reportElement) {
             progText.innerText = 'Rendering Report PDF...';
             
+            // Sync input values to attributes so html2canvas captures them
+            const inputs = reportElement.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    if (input.checked) input.setAttribute('checked', 'checked');
+                    else input.removeAttribute('checked');
+                } else {
+                    input.setAttribute('value', input.value || '');
+                }
+            });
+
             // Check orientation based on report type
             const reportTypeSelector = document.getElementById('report-type-selector');
             const isLandscape = reportTypeSelector && reportTypeSelector.value === 'rice-corn';
@@ -1716,7 +1776,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalMaxWidth = reportElement.style.maxWidth;
                 reportElement.style.maxWidth = 'none';
 
-                const pdfBlob = await html2pdf().from(document.body).set({
+                const pdfBlob = await html2pdf().from(reportElement).set({
                     margin: [10, 5, 10, 5],
                     filename: 'Preprocessing_Report.pdf',
                     image: { type: 'jpeg', quality: 1.0 },
@@ -1726,18 +1786,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         windowWidth: winWidth,
                         useCORS: true,
                         onclone: function(clonedDoc) {
-                            // Hide everything except the modal body
-                            clonedDoc.querySelector('.app-container').style.display = 'none';
-                            clonedDoc.querySelector('.modal-actions').style.display = 'none';
-                            
-                            // Re-enforce the modal layout
-                            const printModal = clonedDoc.getElementById('print-modal');
-                            printModal.style.position = 'static';
-                            printModal.style.width = '100%';
-                            printModal.style.background = 'white';
-                            printModal.classList.remove('hidden');
+                            // Re-enforce the modal layout on the cloned target
+                            const clonedBody = clonedDoc.querySelector('.modal-body') || clonedDoc.body;
+                            if(clonedBody && clonedBody.style) {
+                                clonedBody.style.position = 'static';
+                                clonedBody.style.width = '100%';
+                                clonedBody.style.background = 'white';
+                                clonedBody.style.maxWidth = 'none';
+                                clonedBody.classList.remove('hidden');
+                            }
 
                             // Find and extract `@media print` CSS and inject it as standard CSS inside the clone
+
                             let printStyles = '';
                             for (let i = 0; i < document.styleSheets.length; i++) {
                                 try {

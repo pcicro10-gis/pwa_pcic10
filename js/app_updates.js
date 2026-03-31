@@ -6,6 +6,14 @@ const APP_ANNOUNCEMENT = `⚠️ <strong>This application is under it's final pi
 promptly. Thank you.`;
 
 const APP_RELEASE_NOTES = `
+<strong>v1.4.3 (2026-03-31)</strong>
+<ul style="margin-top: 5px; margin-bottom: 15px;">
+    <li>[FEAT] Completely rebuilt Address Autocomplete framework ensuring lightning fast, synchronous, and flawless offline integration natively from a global static index.</li>
+    <li>[FEAT] Added "Same as Home Address" checkbox to Boat Insurance tabs for rapid port logging.</li>
+    <li>[FEAT] Boat Insurance "Usage" defaults automatically to Fishing seamlessly.</li>
+    <li>[FIX] Enforced proper case-insensitivity against corrupted legacy data restoring stable searches.</li>
+</ul>
+
 <strong>v1.4.2 (2026-03-25)</strong>
 <ul style="margin-top: 5px; margin-bottom: 15px;">
     <li>[FIX] Added missing files for the Preprocessing Hub and other utility scripts to offline cache, allowing full offline usage of the Hub.</li>

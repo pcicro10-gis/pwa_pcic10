@@ -1,0 +1,352 @@
+ProvCode,ProvName,MunCode,MunName,Brgy Code,BrgyName
+67,Surigao del Norte,2,BURGOS,1,BAYBAY
+67,Surigao del Norte,2,BURGOS,2,BITAUG
+67,Surigao del Norte,2,BURGOS,3,MATIN-AO
+67,Surigao del Norte,2,BURGOS,4,POBLACION 1
+67,Surigao del Norte,2,BURGOS,5,POBLACION 2
+67,Surigao del Norte,2,BURGOS,6,SAN MATEO
+67,Surigao del Norte,4,DAPA,1,BAGAKAY
+67,Surigao del Norte,4,DAPA,2,BARANGAY 1 (POB.)
+67,Surigao del Norte,4,DAPA,3,BARANGAY 10 (POB.)
+67,Surigao del Norte,4,DAPA,4,BARANGAY 11 (POB.)
+67,Surigao del Norte,4,DAPA,5,BARANGAY 12 (POB.)
+67,Surigao del Norte,4,DAPA,6,BARANGAY 13 (POB.)
+67,Surigao del Norte,4,DAPA,7,BARANGAY 2 (POB.)
+67,Surigao del Norte,4,DAPA,8,BARANGAY 3 (POB.)
+67,Surigao del Norte,4,DAPA,9,BARANGAY 4 (POB.)
+67,Surigao del Norte,4,DAPA,10,BARANGAY 5 (POB.)
+67,Surigao del Norte,4,DAPA,11,BARANGAY 6 (POB.)
+67,Surigao del Norte,4,DAPA,12,BARANGAY 7 (POB.)
+67,Surigao del Norte,4,DAPA,13,BARANGAY 8 (POB.)
+67,Surigao del Norte,4,DAPA,14,BARANGAY 9 (POB.)
+67,Surigao del Norte,4,DAPA,15,BUENAVISTA
+67,Surigao del Norte,4,DAPA,16,CABAWA
+67,Surigao del Norte,4,DAPA,17,CAMBAS-AC
+67,Surigao del Norte,4,DAPA,18,CONSOLACION
+67,Surigao del Norte,4,DAPA,19,CORREGIDOR
+67,Surigao del Norte,4,DAPA,20,DAGOHOY
+67,Surigao del Norte,4,DAPA,21,DON PAULINO
+67,Surigao del Norte,4,DAPA,22,JUBANG
+67,Surigao del Norte,4,DAPA,23,MONTSERRAT
+67,Surigao del Norte,4,DAPA,24,OSMEÑA
+67,Surigao del Norte,4,DAPA,25,SAN CARLOS
+67,Surigao del Norte,4,DAPA,26,SAN MIGUEL
+67,Surigao del Norte,4,DAPA,27,SANTA FE
+67,Surigao del Norte,4,DAPA,28,SANTA FELOMINA
+67,Surigao del Norte,4,DAPA,29,UNION
+67,Surigao del Norte,6,DEL CARMEN,1,ANTIPOLO
+67,Surigao del Norte,6,DEL CARMEN,2,BAGAKAY (ALBURO)
+67,Surigao del Norte,6,DEL CARMEN,3,BITOON
+67,Surigao del Norte,6,DEL CARMEN,4,CABUGAO
+67,Surigao del Norte,6,DEL CARMEN,5,CANCOHOY
+67,Surigao del Norte,6,DEL CARMEN,6,CAUB
+67,Surigao del Norte,6,DEL CARMEN,7,DEL CARMEN (POB.)
+67,Surigao del Norte,6,DEL CARMEN,8,DOMOYOG
+67,Surigao del Norte,6,DEL CARMEN,9,ESPERANZA
+67,Surigao del Norte,6,DEL CARMEN,10,HALIAN
+67,Surigao del Norte,6,DEL CARMEN,11,JAMOYAON
+67,Surigao del Norte,6,DEL CARMEN,12,KATIPUNAN
+67,Surigao del Norte,6,DEL CARMEN,13,LOBOGON
+67,Surigao del Norte,6,DEL CARMEN,14,MABUHAY
+67,Surigao del Norte,6,DEL CARMEN,15,MAHAYAHAY
+67,Surigao del Norte,6,DEL CARMEN,16,QUEZON
+67,Surigao del Norte,6,DEL CARMEN,17,SAN FERNANDO
+67,Surigao del Norte,6,DEL CARMEN,18,SAN JOSE (POB.)
+67,Surigao del Norte,6,DEL CARMEN,19,SAYAK
+67,Surigao del Norte,6,DEL CARMEN,20,TUBORAN
+67,Surigao del Norte,7,GENERAL LUNA,1,ANAJAWAN
+67,Surigao del Norte,7,GENERAL LUNA,2,CABITOONAN
+67,Surigao del Norte,7,GENERAL LUNA,3,CATANGNAN
+67,Surigao del Norte,7,GENERAL LUNA,4,CONSUELO
+67,Surigao del Norte,7,GENERAL LUNA,5,CORAZON
+67,Surigao del Norte,7,GENERAL LUNA,6,DAKU
+67,Surigao del Norte,7,GENERAL LUNA,7,LA JANUZA
+67,Surigao del Norte,7,GENERAL LUNA,8,LIBERTAD
+67,Surigao del Norte,7,GENERAL LUNA,9,MAGSAYSAY
+67,Surigao del Norte,7,GENERAL LUNA,10,MALINAO
+67,Surigao del Norte,7,GENERAL LUNA,11,POBLACION I (PUROK I)
+67,Surigao del Norte,7,GENERAL LUNA,12,POBLACION II (PUROK II)
+67,Surigao del Norte,7,GENERAL LUNA,13,POBLACION III (PUROK III)
+67,Surigao del Norte,7,GENERAL LUNA,14,POBLACION IV (PUROK IV)
+67,Surigao del Norte,7,GENERAL LUNA,15,POBLACION V (PUROK V)
+67,Surigao del Norte,7,GENERAL LUNA,16,SANTA CRUZ
+67,Surigao del Norte,7,GENERAL LUNA,17,SANTA FE
+67,Surigao del Norte,7,GENERAL LUNA,18,SUYANGAN
+67,Surigao del Norte,7,GENERAL LUNA,19,TAWIN-TAWIN
+67,Surigao del Norte,8,LIBJO,1,ALBOR (POBLACION)
+67,Surigao del Norte,8,LIBJO,2,ARELLANO (MADRID)
+67,Surigao del Norte,8,LIBJO,3,BAYANIHAN
+67,Surigao del Norte,8,LIBJO,4,DOÃ‘A HELEN
+67,Surigao del Norte,8,LIBJO,5,GARCIA
+67,Surigao del Norte,8,LIBJO,6,GENERAL AGUINALDO (BOLOD-BOLOD)
+67,Surigao del Norte,8,LIBJO,7,KANIHAAN
+67,Surigao del Norte,8,LIBJO,8,LLAMERA
+67,Surigao del Norte,8,LIBJO,9,MAGSAYSAY
+67,Surigao del Norte,8,LIBJO,10,OSMEÃ‘A
+67,Surigao del Norte,8,LIBJO,11,PLARIDEL
+67,Surigao del Norte,8,LIBJO,12,QUEZON
+67,Surigao del Norte,8,LIBJO,13,ROSITA
+67,Surigao del Norte,8,LIBJO,14,SAN ANTONIO (POBLACION)
+67,Surigao del Norte,8,LIBJO,15,SAN JOSE
+67,Surigao del Norte,8,LIBJO,16,SANTO NIÃ‘O
+67,Surigao del Norte,10,PILAR,1,ASINAN (POB.)
+67,Surigao del Norte,10,PILAR,2,CARIDAD
+67,Surigao del Norte,10,PILAR,3,CENTRO (POB.)
+67,Surigao del Norte,10,PILAR,4,CONSOLACION
+67,Surigao del Norte,10,PILAR,5,DATU
+67,Surigao del Norte,10,PILAR,6,DAYAOHAY
+67,Surigao del Norte,10,PILAR,7,JABOY
+67,Surigao del Norte,10,PILAR,8,KATIPUNAN
+67,Surigao del Norte,10,PILAR,9,MAASIN
+67,Surigao del Norte,10,PILAR,10,MABINI
+67,Surigao del Norte,10,PILAR,11,MABUHAY
+67,Surigao del Norte,10,PILAR,12,PILARING (POB.)
+67,Surigao del Norte,10,PILAR,13,PUNTA (POB.)
+67,Surigao del Norte,10,PILAR,14,SALVACION
+67,Surigao del Norte,10,PILAR,15,SAN ROQUE
+67,Surigao del Norte,11,SAN BENITO,1,BONGDO
+67,Surigao del Norte,11,SAN BENITO,2,MARIBOJOC
+67,Surigao del Norte,11,SAN BENITO,3,NUEVO CAMPO
+67,Surigao del Norte,11,SAN BENITO,4,SAN JUAN
+67,Surigao del Norte,11,SAN BENITO,5,SANTA CRUZ (POB.)
+67,Surigao del Norte,11,SAN BENITO,6,TALISAY (POB.)
+67,Surigao del Norte,12,SAN ISIDRO,1,BUHING CALIPAY
+67,Surigao del Norte,12,SAN ISIDRO,2,DEL CARMEN (POB.)
+67,Surigao del Norte,12,SAN ISIDRO,3,DEL PILAR
+67,Surigao del Norte,12,SAN ISIDRO,4,MACAPAGAL
+67,Surigao del Norte,12,SAN ISIDRO,5,PACIFICO
+67,Surigao del Norte,12,SAN ISIDRO,6,PELAEZ
+67,Surigao del Norte,12,SAN ISIDRO,7,ROXAS
+67,Surigao del Norte,12,SAN ISIDRO,8,SAN MIGUEL
+67,Surigao del Norte,12,SAN ISIDRO,9,SANTA PAZ
+67,Surigao del Norte,12,SAN ISIDRO,10,SANTO NIÑO
+67,Surigao del Norte,12,SAN ISIDRO,11,TAMBACAN
+67,Surigao del Norte,12,SAN ISIDRO,12,TIGASAO
+67,Surigao del Norte,14,SOCORRO,1,ALBINO TARUC
+67,Surigao del Norte,14,SOCORRO,2,DEL PILAR
+67,Surigao del Norte,14,SOCORRO,3,HELENE
+67,Surigao del Norte,14,SOCORRO,4,HONRADO
+67,Surigao del Norte,14,SOCORRO,5,NAVARRO (POB.)
+67,Surigao del Norte,14,SOCORRO,6,NUEVA ESTRELLA
+67,Surigao del Norte,14,SOCORRO,7,PAMOSAINGAN
+67,Surigao del Norte,14,SOCORRO,8,RIZAL (POB.)
+67,Surigao del Norte,14,SOCORRO,9,SALOG
+67,Surigao del Norte,14,SOCORRO,10,SAN ROQUE
+67,Surigao del Norte,14,SOCORRO,11,SANTA CRUZ
+67,Surigao del Norte,14,SOCORRO,12,SERING
+67,Surigao del Norte,14,SOCORRO,13,SONGKOY
+67,Surigao del Norte,14,SOCORRO,14,SUDLON
+67,Surigao del Norte,15,STA. MONICA,1,ABAD SANTOS
+67,Surigao del Norte,15,STA. MONICA,2,ALEGRIA
+67,Surigao del Norte,15,STA. MONICA,3,BAILAN
+67,Surigao del Norte,15,STA. MONICA,4,GARCIA
+67,Surigao del Norte,15,STA. MONICA,5,LIBERTAD
+67,Surigao del Norte,15,STA. MONICA,6,MABINI
+67,Surigao del Norte,15,STA. MONICA,7,MABUHAY (POB.)
+67,Surigao del Norte,15,STA. MONICA,8,MAGSAYSAY
+67,Surigao del Norte,15,STA. MONICA,9,RIZAL
+67,Surigao del Norte,15,STA. MONICA,10,T. ARLAN (POB.)
+67,Surigao del Norte,15,STA. MONICA,11,TANGBO
+67,Surigao del Norte,17,ALEGRIA,1,ALIPAO
+67,Surigao del Norte,17,ALEGRIA,2,ANAHAW
+67,Surigao del Norte,17,ALEGRIA,3,BUDLINGIN
+67,Surigao del Norte,17,ALEGRIA,4,CAMP EDUARD (GEOTINA)
+67,Surigao del Norte,17,ALEGRIA,5,FERLDA
+67,Surigao del Norte,17,ALEGRIA,6,GAMUTON
+67,Surigao del Norte,17,ALEGRIA,7,JULIO OUANO (POB.)
+67,Surigao del Norte,17,ALEGRIA,8,OMBONG
+67,Surigao del Norte,17,ALEGRIA,9,POBLACION (ALEGRIA)
+67,Surigao del Norte,17,ALEGRIA,10,PONGTUD
+67,Surigao del Norte,17,ALEGRIA,11,SAN JUAN
+67,Surigao del Norte,17,ALEGRIA,12,SAN PEDRO
+67,Surigao del Norte,18,BACUAG,1,CABUGAO
+67,Surigao del Norte,18,BACUAG,2,CAMBUAYON
+67,Surigao del Norte,18,BACUAG,3,CAMPO
+67,Surigao del Norte,18,BACUAG,4,DUGSANGON
+67,Surigao del Norte,18,BACUAG,5,PAUTAO
+67,Surigao del Norte,18,BACUAG,6,PAYAPAG
+67,Surigao del Norte,18,BACUAG,7,POBLACION
+67,Surigao del Norte,18,BACUAG,8,PUNGTOD
+67,Surigao del Norte,18,BACUAG,9,SANTO ROSARIO
+67,Surigao del Norte,19,CLAVER,1,BAGAKAY (POB. WEST)
+67,Surigao del Norte,19,CLAVER,2,CABUGO
+67,Surigao del Norte,19,CLAVER,3,CAGDIANAO
+67,Surigao del Norte,19,CLAVER,4,DAYWAN
+67,Surigao del Norte,19,CLAVER,5,HAYANGGABON
+67,Surigao del Norte,19,CLAVER,6,LADGARON (POB.)
+67,Surigao del Norte,19,CLAVER,7,LAPINIGAN
+67,Surigao del Norte,19,CLAVER,8,MAGALLANES
+67,Surigao del Norte,19,CLAVER,9,PANATAO
+67,Surigao del Norte,19,CLAVER,10,SAPA
+67,Surigao del Norte,19,CLAVER,11,TAGANITO
+67,Surigao del Norte,19,CLAVER,12,TAYAGA (POB. EAST)
+67,Surigao del Norte,19,CLAVER,13,URBIZTONDO
+67,Surigao del Norte,19,CLAVER,14,WANGKE
+67,Surigao del Norte,20,GIGAQUIT,1,ALAMBIQUE (POB.)
+67,Surigao del Norte,20,GIGAQUIT,2,ANIBONGAN
+67,Surigao del Norte,20,GIGAQUIT,3,CAMAM-ONAN
+67,Surigao del Norte,20,GIGAQUIT,4,CAM-BOAYON
+67,Surigao del Norte,20,GIGAQUIT,5,IPIL (POB.)
+67,Surigao del Norte,20,GIGAQUIT,6,LAHI
+67,Surigao del Norte,20,GIGAQUIT,7,MAHANUB
+67,Surigao del Norte,20,GIGAQUIT,8,PONIENTE
+67,Surigao del Norte,20,GIGAQUIT,9,SAN ANTONIO (BONOT)
+67,Surigao del Norte,20,GIGAQUIT,10,SAN ISIDRO
+67,Surigao del Norte,20,GIGAQUIT,11,SICO-SICO
+67,Surigao del Norte,20,GIGAQUIT,12,VILLAFLOR
+67,Surigao del Norte,20,GIGAQUIT,13,VILLAFRANCA
+67,Surigao del Norte,21,MAINIT,1,BINGA
+67,Surigao del Norte,21,MAINIT,2,BOBONA-ON
+67,Surigao del Norte,21,MAINIT,3,CANTUGAS
+67,Surigao del Norte,21,MAINIT,4,DAYANO
+67,Surigao del Norte,21,MAINIT,5,MABINI
+67,Surigao del Norte,21,MAINIT,6,MAGPAYANG
+67,Surigao del Norte,21,MAINIT,7,MAGSAYSAY (POB.)
+67,Surigao del Norte,21,MAINIT,8,MANSAYAO
+67,Surigao del Norte,21,MAINIT,9,MARAYAG
+67,Surigao del Norte,21,MAINIT,10,MATIN-AO
+67,Surigao del Norte,21,MAINIT,11,PACO
+67,Surigao del Norte,21,MAINIT,12,QUEZON (POB.)
+67,Surigao del Norte,21,MAINIT,13,ROXAS
+67,Surigao del Norte,21,MAINIT,14,SAN FRANCISCO
+67,Surigao del Norte,21,MAINIT,15,SAN ISIDRO
+67,Surigao del Norte,21,MAINIT,16,SAN JOSE
+67,Surigao del Norte,21,MAINIT,17,SIANA
+67,Surigao del Norte,21,MAINIT,18,SILOP
+67,Surigao del Norte,21,MAINIT,19,TAGBUYAWAN
+67,Surigao del Norte,21,MAINIT,20,TAPI-AN
+67,Surigao del Norte,21,MAINIT,21,TOLINGON
+67,Surigao del Norte,22,MALIMONO,1,BUNYASAN
+67,Surigao del Norte,22,MALIMONO,2,CAGTINAE
+67,Surigao del Norte,22,MALIMONO,3,CAN-AGA
+67,Surigao del Norte,22,MALIMONO,4,CANSAYONG
+67,Surigao del Norte,22,MALIMONO,5,CANTAPOY
+67,Surigao del Norte,22,MALIMONO,6,CAYAWAN
+67,Surigao del Norte,22,MALIMONO,7,DORO (BINOCARAN)
+67,Surigao del Norte,22,MALIMONO,8,HANAGDONG
+67,Surigao del Norte,22,MALIMONO,9,KARIHATAG
+67,Surigao del Norte,22,MALIMONO,10,MASGAD
+67,Surigao del Norte,22,MALIMONO,11,PILI
+67,Surigao del Norte,22,MALIMONO,12,SAN ISIDRO (POB.)
+67,Surigao del Norte,22,MALIMONO,13,TINAGO
+67,Surigao del Norte,22,MALIMONO,14,VILLARIZA
+67,Surigao del Norte,23,PLACER,1,AMOSLOG
+67,Surigao del Norte,23,PLACER,2,ANISLAGAN
+67,Surigao del Norte,23,PLACER,3,BAD-AS
+67,Surigao del Norte,23,PLACER,4,BOYONGAN
+67,Surigao del Norte,23,PLACER,5,BUGAS-BUGAS
+67,Surigao del Norte,23,PLACER,6,CENTRAL (POB.)
+67,Surigao del Norte,23,PLACER,7,ELLAPERAL (NONOK)
+67,Surigao del Norte,23,PLACER,8,IPIL (POB.)
+67,Surigao del Norte,23,PLACER,9,LAKANDULA
+67,Surigao del Norte,23,PLACER,10,MABINI
+67,Surigao del Norte,23,PLACER,11,MACALAYA
+67,Surigao del Norte,23,PLACER,12,MAGSAYSAY (POB.)
+67,Surigao del Norte,23,PLACER,13,MAGUPANGE
+67,Surigao del Norte,23,PLACER,14,PANANAY-AN
+67,Surigao del Norte,23,PLACER,15,PANHUTONGAN
+67,Surigao del Norte,23,PLACER,16,SAN ISIDRO
+67,Surigao del Norte,23,PLACER,17,SANI-SANI
+67,Surigao del Norte,23,PLACER,18,SANTA CRUZ
+67,Surigao del Norte,23,PLACER,19,SUYOC
+67,Surigao del Norte,23,PLACER,20,TAGBONGABONG
+67,Surigao del Norte,24,SAN FRANCISCO,1,AMONTAY
+67,Surigao del Norte,24,SAN FRANCISCO,2,BALITE
+67,Surigao del Norte,24,SAN FRANCISCO,3,BANBANON
+67,Surigao del Norte,24,SAN FRANCISCO,4,DIAZ
+67,Surigao del Norte,24,SAN FRANCISCO,5,HONRADO
+67,Surigao del Norte,24,SAN FRANCISCO,6,JUBGAN
+67,Surigao del Norte,24,SAN FRANCISCO,7,LINONGGANAN
+67,Surigao del Norte,24,SAN FRANCISCO,8,MACOPA
+67,Surigao del Norte,24,SAN FRANCISCO,9,MAGTANGALE
+67,Surigao del Norte,24,SAN FRANCISCO,10,OSLAO
+67,Surigao del Norte,24,SAN FRANCISCO,11,POBLACION
+67,Surigao del Norte,25,SISON,1,BIYABID
+67,Surigao del Norte,25,SISON,2,GACEPAN
+67,Surigao del Norte,25,SISON,3,IMA
+67,Surigao del Norte,25,SISON,4,LOWER PATAG
+67,Surigao del Norte,25,SISON,5,MABUHAY
+67,Surigao del Norte,25,SISON,6,MAYAG
+67,Surigao del Norte,25,SISON,7,POBLACION (SAN PEDRO)
+67,Surigao del Norte,25,SISON,8,SAN ISIDRO
+67,Surigao del Norte,25,SISON,9,SAN PABLO
+67,Surigao del Norte,25,SISON,10,TAGBAYANI
+67,Surigao del Norte,25,SISON,11,TINOGPAHAN
+67,Surigao del Norte,25,SISON,12,UPPER PATAG
+67,Surigao del Norte,26,SURIGAO CITY,1,ALANG-ALANG
+67,Surigao del Norte,26,SURIGAO CITY,2,ALEGRIA
+67,Surigao del Norte,26,SURIGAO CITY,3,ANOMAR
+67,Surigao del Norte,26,SURIGAO CITY,4,AURORA
+67,Surigao del Norte,26,SURIGAO CITY,5,BALIBAYON
+67,Surigao del Norte,26,SURIGAO CITY,6,BAYBAY
+67,Surigao del Norte,26,SURIGAO CITY,7,BILABID
+67,Surigao del Norte,26,SURIGAO CITY,8,BITAUGAN
+67,Surigao del Norte,26,SURIGAO CITY,9,BONIFACIO
+67,Surigao del Norte,26,SURIGAO CITY,10,BUENAVISTA
+67,Surigao del Norte,26,SURIGAO CITY,11,CABONGBONGAN
+67,Surigao del Norte,26,SURIGAO CITY,12,CAGNIOG
+67,Surigao del Norte,26,SURIGAO CITY,13,CAGUTSAN
+67,Surigao del Norte,26,SURIGAO CITY,14,CANLANIPA
+67,Surigao del Norte,26,SURIGAO CITY,15,CANTIASAY
+67,Surigao del Norte,26,SURIGAO CITY,16,CAPALAYAN
+67,Surigao del Norte,26,SURIGAO CITY,17,CATADMAN
+67,Surigao del Norte,26,SURIGAO CITY,18,DANAO
+67,Surigao del Norte,26,SURIGAO CITY,19,DANAWAN
+67,Surigao del Norte,26,SURIGAO CITY,20,DAY-ASAN
+67,Surigao del Norte,26,SURIGAO CITY,21,IPIL
+67,Surigao del Norte,26,SURIGAO CITY,22,LIBUAC
+67,Surigao del Norte,26,SURIGAO CITY,23,LIPATA
+67,Surigao del Norte,26,SURIGAO CITY,24,LISONDRA
+67,Surigao del Norte,26,SURIGAO CITY,25,LUNA
+67,Surigao del Norte,26,SURIGAO CITY,26,MABINI
+67,Surigao del Norte,26,SURIGAO CITY,27,MABUA
+67,Surigao del Norte,26,SURIGAO CITY,28,MANYAGAO
+67,Surigao del Norte,26,SURIGAO CITY,29,MAPAWA
+67,Surigao del Norte,26,SURIGAO CITY,30,MAT-I
+67,Surigao del Norte,26,SURIGAO CITY,31,NABAGO
+67,Surigao del Norte,26,SURIGAO CITY,32,NONOC
+67,Surigao del Norte,26,SURIGAO CITY,33,OROK
+67,Surigao del Norte,26,SURIGAO CITY,34,POCTOY
+67,Surigao del Norte,26,SURIGAO CITY,35,PUNTA BILAR
+67,Surigao del Norte,26,SURIGAO CITY,36,QUEZON
+67,Surigao del Norte,26,SURIGAO CITY,37,RIZAL
+67,Surigao del Norte,26,SURIGAO CITY,38,SABANG
+67,Surigao del Norte,26,SURIGAO CITY,39,SAN ISIDRO
+67,Surigao del Norte,26,SURIGAO CITY,40,SAN JOSE
+67,Surigao del Norte,26,SURIGAO CITY,41,SAN JUAN
+67,Surigao del Norte,26,SURIGAO CITY,42,SAN PEDRO (HANIGAD)
+67,Surigao del Norte,26,SURIGAO CITY,43,SAN ROQUE
+67,Surigao del Norte,26,SURIGAO CITY,44,SERNA
+67,Surigao del Norte,26,SURIGAO CITY,45,SIDLAKAN
+67,Surigao del Norte,26,SURIGAO CITY,46,SILOP
+67,Surigao del Norte,26,SURIGAO CITY,47,SUGBAY
+67,Surigao del Norte,26,SURIGAO CITY,48,SUKAILANG
+67,Surigao del Norte,26,SURIGAO CITY,49,TAFT (POB.)
+67,Surigao del Norte,26,SURIGAO CITY,50,TALISAY
+67,Surigao del Norte,26,SURIGAO CITY,51,TOGBONGON
+67,Surigao del Norte,26,SURIGAO CITY,52,TRINIDAD
+67,Surigao del Norte,26,SURIGAO CITY,53,WASHINGTON (POB.)
+67,Surigao del Norte,26,SURIGAO CITY,54,ZARAGOZA
+67,Surigao del Norte,27,TAGANA-AN,1,AURORA (POB.)
+67,Surigao del Norte,27,TAGANA-AN,2,AZUCENA (POB.)
+67,Surigao del Norte,27,TAGANA-AN,3,BANBAN
+67,Surigao del Norte,27,TAGANA-AN,4,CAWILAN
+67,Surigao del Norte,27,TAGANA-AN,5,FABIO
+67,Surigao del Norte,27,TAGANA-AN,6,HIMAMAUG
+67,Surigao del Norte,27,TAGANA-AN,7,LAUREL
+67,Surigao del Norte,27,TAGANA-AN,8,LOWER LIBAS
+67,Surigao del Norte,27,TAGANA-AN,9,OPONG
+67,Surigao del Norte,27,TAGANA-AN,10,PATINO
+67,Surigao del Norte,27,TAGANA-AN,11,SAMPAGUITA (POB.)
+67,Surigao del Norte,27,TAGANA-AN,12,TALAVERA
+67,Surigao del Norte,27,TAGANA-AN,13,UNION
+67,Surigao del Norte,27,TAGANA-AN,14,UPPER LIBAS
+67,Surigao del Norte,28,TUBOD,1,CAPAYAHAN
+67,Surigao del Norte,28,TUBOD,2,CAWILAN
+67,Surigao del Norte,28,TUBOD,3,DEL ROSARIO
+67,Surigao del Norte,28,TUBOD,4,MARGA
+67,Surigao del Norte,28,TUBOD,5,MOTORPOOL
+67,Surigao del Norte,28,TUBOD,6,POBLACION (TUBOD)
+67,Surigao del Norte,28,TUBOD,7,SAN ISIDRO
+67,Surigao del Norte,28,TUBOD,8,SAN PABLO
+67,Surigao del Norte,28,TUBOD,9,TIMAMANA

@@ -3,7 +3,7 @@ function toggleSidebar() {
 }
 
 // === VERSION CONTROL ===
-const APP_VERSION = "1.4.2"; // Single source of truth
+const APP_VERSION = "1.4.3"; // Single source of truth
 // =======================
 
 const getDeviceID = () => {
@@ -190,8 +190,29 @@ const safeSet = (id, val) => {
     const el = document.getElementById(id);
     if (el) {
         el.value = (val === undefined || val === null) ? '' : val;
-        // Trigger input event to update label floating/reactivity if needed
         el.dispatchEvent(new Event('input', { bubbles: true }));
+
+        if (id.includes('prov')) {
+            let munDatalistId = '';
+            let bgyDatalistId = '';
+            if (id === 'f_prov_farmer') { munDatalistId = 'dl_f_mun_farmer'; bgyDatalistId = 'dl_f_brgy_farmer'; }
+            else if (id === 'f_farm_prov') { munDatalistId = 'dl_f_farm_mun'; bgyDatalistId = 'dl_f_farm_bgy'; }
+            else if (id === 'live_prov') { munDatalistId = 'dl_live_mun'; bgyDatalistId = 'dl_live_bgy'; }
+
+            if (munDatalistId && typeof filterMunicipalities === 'function') {
+                filterMunicipalities(el.value, munDatalistId, bgyDatalistId);
+            }
+        }
+        else if (id.includes('mun')) {
+            let bgyDatalistId = '';
+            if (id === 'f_mun_farmer') bgyDatalistId = 'dl_f_brgy_farmer';
+            else if (id === 'f_farm_mun') bgyDatalistId = 'dl_f_farm_bgy';
+            else if (id === 'live_mun') bgyDatalistId = 'dl_live_bgy';
+
+            if (bgyDatalistId && typeof filterBarangays === 'function') {
+                filterBarangays(el.value, bgyDatalistId);
+            }
+        }
         return true;
     }
     return false;
@@ -1811,7 +1832,9 @@ function fillPolicyFromRecord(history, scope = 'all') {
         if (line === 'Banca') {
             setTimeout(() => {
                 safeSet('banca_port', history.Address || '');
-                safeSet('banca_usage', history.Usage || '');
+                safeSet('banca_usage', history.Usage || 'Fishing');
+                const chk = document.getElementById('chk_banca_same_addr');
+                if (chk) chk.checked = false;
                 safeSet('banca_crew', history.Manning || '');
                 safeSet('banca_material', history.BoatMaterial || 'Wood');
                 safeSet('banca_type', history.BoatType || 'Motorized');
@@ -2547,7 +2570,9 @@ async function finalizeApplication(mode = 'complete') {
 
             // 4. Clear Banca Details
             document.getElementById('banca_port').value = '';
-            document.getElementById('banca_usage').value = '';
+            document.getElementById('banca_usage').value = 'Fishing';
+            const chk = document.getElementById('chk_banca_same_addr');
+            if (chk) chk.checked = false;
             document.getElementById('banca_crew').value = ''; // Serves as tonnage
             document.getElementById('banca_material').value = '';
             document.getElementById('banca_type').value = '';
@@ -2943,6 +2968,9 @@ async function generateIndividualPDF(data, returnBlob = false) {
                 }
             } catch (e) { console.error("Photo rendering error:", e); }
         }
+
+        // Reset text color
+
 
         const pdfBlob = doc.output('blob');
         if (returnBlob) return { blob: pdfBlob, name: suggestedName };
@@ -3344,6 +3372,10 @@ async function generateSummary(fmt) {
             // --- Metadata ---
             "PeriodFrom", "PeriodTo", "timestamp"
         ];
+        
+        if (fmt === 'transfer') {
+            headers.push("Signature", "GuardianSignature", "Photo");
+        }
 
         const csvRows = [headers.join(",")];
 
@@ -4630,66 +4662,6 @@ function closeCamera() {
 }
 
 
-// --- ADDRESS AUTOCOMPLETE LOGIC ---
-const ADDRESS_CACHE = {
-    provinces: new Set(),
-    municipalities: {} // Key: Province, Value: Set of Municipalities
-};
-
-async function populateAddressDatalists() {
-    try {
-        // 1. Fetch all profiles to build the cache
-        const profiles = await db.profiles.toArray();
-
-        profiles.forEach(p => {
-            const prov = (p.Province || "").trim().toUpperCase();
-            const mun = (p.Municipality || "").trim().toUpperCase();
-
-            if (prov) {
-                ADDRESS_CACHE.provinces.add(prov);
-                if (mun) {
-                    if (!ADDRESS_CACHE.municipalities[prov]) {
-                        ADDRESS_CACHE.municipalities[prov] = new Set();
-                    }
-                    ADDRESS_CACHE.municipalities[prov].add(mun);
-                }
-            }
-        });
-
-        // 2. Populate Province Datalist
-        const provList = document.getElementById('province-list');
-        if (provList) {
-            provList.innerHTML = Array.from(ADDRESS_CACHE.provinces).sort().map(p => `<option value="${p}">`).join('');
-        }
-
-        console.log('Address Cache Built:', ADDRESS_CACHE);
-
-    } catch (e) {
-        console.error("Error building address cache:", e);
-    }
-}
-
-function filterMunicipalities(provInputId, munListId) {
-    const provInput = document.getElementById(provInputId);
-    const munList = document.getElementById(munListId);
-
-    if (!provInput || !munList) return;
-
-    const selectedProv = provInput.value.trim().toUpperCase();
-    const munSet = ADDRESS_CACHE.municipalities[selectedProv];
-
-    if (munSet) {
-        munList.innerHTML = Array.from(munSet).sort().map(m => `<option value="${m}">`).join('');
-    } else {
-        munList.innerHTML = ''; // Clear if no province match
-    }
-}
-
-// Initialize on load
-window.addEventListener('load', () => {
-    // ... existing load logic ...
-    setTimeout(populateAddressDatalists, 1000); // Delay slightly to ensure DB is ready
-});
 
 function capturePhoto() {
     const video = document.getElementById('camera-video');
