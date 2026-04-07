@@ -1217,8 +1217,22 @@ function handleCivilStatus() {
 
 // --- ADSS Logic ---
 
+function validateADSSPremium() {
+    const premiumInput = document.getElementById('adss_premium');
+    if (premiumInput.value === "") return;
+    const premium = parseFloat(premiumInput.value) || 0;
+    
+    // Safety precaution: disallow if 101.00 and above OR 14.00 and below
+    if (premium >= 101.00 || premium <= 14.00) {
+        alert("Invalid Premium Amount. Amount must be strictly between 14.00 and 101.00.");
+        premiumInput.value = "";
+        document.getElementById('adss_cover').value = "0.00";
+    }
+}
+
 function calculateADSSCover() {
-    const premium = parseFloat(document.getElementById('adss_premium').value) || 0;
+    const premiumInput = document.getElementById('adss_premium');
+    const premium = parseFloat(premiumInput.value) || 0;
     const cover = premium * 1000;
     document.getElementById('adss_cover').value = cover.toFixed(2);
 }

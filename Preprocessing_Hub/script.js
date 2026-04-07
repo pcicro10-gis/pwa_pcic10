@@ -922,14 +922,149 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function getDynamicFileNamePrefix(filteredData, insuranceValue) {
+        if (!filteredData || filteredData.length === 0) return 'Unknown';
+        const firstRow = filteredData[0];
+        const insLine = firstRow.InsuranceLine || 'UnknownLine';
+
+        let detail = '';
+        const isCrop = insuranceValue.includes('crop') || ['rice', 'corn', 'hvc', 'palay', 'coconut', 'cacao'].some(c => insuranceValue.includes(c));
+        
+        if (isCrop) {
+            detail = firstRow.CropType || 'MixedCrop';
+            return `${insLine}_${detail}`;
+        } else if (insuranceValue.includes('banca') || insuranceValue.includes('fisheries') || insuranceValue.includes('noncrop')) {
+            detail = firstRow.BoatType || 'MixedBanca';
+            return `${insLine}_${detail}`;
+        } else if (insuranceValue.includes('livestock') || insuranceValue.includes('animal')) {
+            const animalType = firstRow.AnimalType || 'MixedAnimal';
+            const classification = firstRow.Classification || 'MixedClass';
+            return `${insLine}_${animalType}_${classification}`;
+        } else if (insuranceValue.includes('adss') || insuranceValue.includes('tir')) {
+            return `ADSS`;
+        }
+        return insLine;
+    }
+
     // --- MODAL & PREVIEW LOGIC ---
     const modalPrintBtn = document.getElementById('modal-print-btn');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const printModal = document.getElementById('print-modal');
 
     if (modalPrintBtn) {
-        modalPrintBtn.addEventListener('click', () => {
-            window.print();
+        modalPrintBtn.addEventListener('click', async () => {
+            const reportElement = document.querySelector('.modal-body');
+            const activeReports = Array.from(document.querySelectorAll('.modal-body .report-print-only:not(.hidden)'));
+
+            if (!reportElement || activeReports.length === 0) {
+                alert('No report is visible to save.');
+                return;
+            }
+
+            const reportTypeSelector = document.getElementById('report-type-selector');
+            const isLandscape = reportTypeSelector && reportTypeSelector.value === 'rice-corn';
+            const pdfOrientation = isLandscape ? 'landscape' : 'portrait';
+
+            // Build dynamic filename
+            const insuranceValue = (document.getElementById('insurance-filter') ? document.getElementById('insurance-filter').value.toLowerCase() : 'all');
+            const filteredData = csvData.filter(row => selectedRowIds.includes(String(row['No.'])));
+            // If they happen to print without selecting lines, we just use the main CSV data count (though the workflow implies selection first)
+            const exportData = filteredData.length > 0 ? filteredData : window.lastFilteredData || [];
+            const count = exportData.length;
+            const prefix = getDynamicFileNamePrefix(exportData, insuranceValue);
+            const fileName = `PRE-PROCESSING SLIP_${prefix}_${count}.pdf`;
+
+            // Prepare UI for rendering
+            const prevText = modalPrintBtn.innerHTML;
+            modalPrintBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            modalPrintBtn.disabled = true;
+
+            // Sync inputs so html2canvas sees typed text
+            activeReports.forEach(report => {
+                const inputs = report.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        if (input.checked) input.setAttribute('checked', 'checked');
+                        else input.removeAttribute('checked');
+                    } else {
+                        input.setAttribute('value', input.value || '');
+                    }
+                });
+            });
+
+            const scaledA4Width = '172.2mm';
+            const sequenceWrapper = document.createElement('div');
+            sequenceWrapper.style.width = scaledA4Width;
+            sequenceWrapper.style.margin = '0 auto 0 0';
+
+            const originalDisplays = [];
+            const originalZooms = [];
+            const origHeights = activeReports.map(report => {
+                originalZooms.push(report.style.getPropertyValue('zoom'));
+                report.style.setProperty('zoom', '1', 'important');
+                const w = report.style.width;
+                report.style.setProperty('width', '210mm', 'important');
+                const h = report.offsetHeight;
+                if (w) report.style.width = w; else report.style.removeProperty('width');
+                return h;
+            });
+
+            activeReports.forEach(report => {
+                originalDisplays.push(report.style.display);
+                report.style.display = 'none';
+            });
+
+            activeReports.forEach((report, index) => {
+                const cropHeight = origHeights[index] * 0.82;
+                const clone = report.cloneNode(true);
+                clone.style.setProperty('width', '210mm', 'important');
+                clone.style.display = 'block';
+                clone.style.margin = '0';
+                clone.style.transform = 'scale(0.82)';
+                clone.style.transformOrigin = 'top left';
+
+                const cropBox = document.createElement('div');
+                cropBox.style.width = scaledA4Width;
+                cropBox.style.height = cropHeight + 'px';
+                cropBox.style.overflow = 'hidden';
+                cropBox.style.position = 'relative';
+
+                cropBox.appendChild(clone);
+                sequenceWrapper.appendChild(cropBox);
+
+                if (index < activeReports.length - 1) {
+                    const pb = document.createElement('div');
+                    pb.classList.add('html2pdf__page-break');
+                    pb.style.pageBreakAfter = 'always';
+                    pb.style.height = '1px';
+                    sequenceWrapper.appendChild(pb);
+                }
+            });
+
+            reportElement.appendChild(sequenceWrapper);
+
+            try {
+                await html2pdf().from(sequenceWrapper).set({
+                    margin: [10, 18.9, 0, 18.9],
+                    filename: fileName,
+                    image: { type: 'jpeg', quality: 1.0 },
+                    pagebreak: { mode: ['css', 'legacy'] },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: pdfOrientation }
+                }).save();
+            } catch (e) {
+                console.error("PDF generation failed", e);
+                alert("Failed to generate PDF.");
+            } finally {
+                if (reportElement.contains(sequenceWrapper)) reportElement.removeChild(sequenceWrapper);
+                activeReports.forEach((report, index) => {
+                    report.style.display = originalDisplays[index];
+                    if (originalZooms[index]) report.style.setProperty('zoom', originalZooms[index]);
+                    else report.style.removeProperty('zoom');
+                });
+                modalPrintBtn.innerHTML = prevText;
+                modalPrintBtn.disabled = false;
+            }
         });
     }
 
@@ -1648,7 +1783,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
 
-        const fileName = `${reportType}_summary_${new Date().toISOString().slice(0, 10)}.csv`;
+        const prefix = getDynamicFileNamePrefix(filteredData, insuranceValue);
+        const fileName = `SUMMARY_${prefix}_${filteredData.length}.csv`;
+        
         link.setAttribute('href', url);
         link.setAttribute('download', fileName);
         link.style.visibility = 'hidden';
