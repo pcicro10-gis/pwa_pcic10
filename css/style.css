@@ -20,22 +20,13 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    height: 100%;
-    width: 100%;
-    min-height: 100%;
-    min-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
     background: #f4f7f6;
     color: var(--text-dark);
     box-sizing: border-box;
     overflow: hidden;
-}
-
-html {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: var(--primary); /* Bleeds into device safe areas */
 }
 
 /* Sidebar Nav (Floating) */
@@ -1655,7 +1646,7 @@ select:focus {
     box-sizing: border-box;
 }
 
-body {
+.preprocessing-hub-body {
     font-family: 'Outfit', sans-serif;
     color: var(--text-color);
     background: var(--bg-gradient);
@@ -3063,6 +3054,9 @@ footer, .global-footer {
     }
 }
 
+html {
+    background-color: #ffffff;
+}
 
 /* ── Resizable Table Columns ─────────────────────────── */
 #preview-table th {
