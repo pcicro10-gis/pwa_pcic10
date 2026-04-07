@@ -1115,13 +1115,13 @@ footer {
 /* --- PRINT STYLES --- */
 @page {
     size: A4 portrait;
-    margin: 5mm;
+    margin: 12.7mm;
     /* Explicitly equal margins for all sides */
 }
 
 @page landscape-page {
     size: A4 landscape;
-    margin: 5mm;
+    margin: 12.7mm;
 }
 
 @media print {
@@ -1175,7 +1175,8 @@ footer {
         display: block !important;
         margin: 0 auto !important;
         /* Force centering relative to paper */
-        zoom: 0.8;
+        transform: scale(0.8);
+        transform-origin: top center;
         page-break-inside: auto;
         width: 100% !important;
         border: none !important;
@@ -1185,7 +1186,8 @@ footer {
     #adss-slip-template:not(.hidden) {
         display: block !important;
         margin: 10mm auto !important;
-        zoom: 0.8;
+        transform: scale(0.8);
+        transform-origin: top center;
         width: 100% !important;
         page-break-inside: avoid;
         page-break-after: always;
@@ -1311,8 +1313,9 @@ footer {
 
     #ricencorn-preprocessing-slip {
         margin: 0 auto;
-        zoom: 0.70;
-        /* keep zoom for landscape rice/corn if needed */
+        transform: scale(0.70);
+        transform-origin: top center;
+        /* keep scale for landscape rice/corn if needed */
         page-break-inside: avoid;
         width: 100%;
         max-width: 270mm;

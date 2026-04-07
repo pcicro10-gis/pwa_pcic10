@@ -1751,81 +1751,163 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Add Preprocessing Report PDF
         const reportElement = document.querySelector('.modal-body');
-        if (reportElement) {
+        // Fetch ALL currently visible reports (e.g. TIR triggers both ADSS and TIR forms)
+        const activeReports = Array.from(document.querySelectorAll('.modal-body .report-print-only:not(.hidden)'));
+
+        if (reportElement && activeReports.length > 0) {
             progText.innerText = 'Rendering Report PDF...';
             
-            // Sync input values to attributes so html2canvas captures them
-            const inputs = reportElement.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                if (input.type === 'checkbox' || input.type === 'radio') {
-                    if (input.checked) input.setAttribute('checked', 'checked');
-                    else input.removeAttribute('checked');
-                } else {
-                    input.setAttribute('value', input.value || '');
-                }
+            // Sync input values to attributes for ALL reports securely so html2canvas captures user typing
+            activeReports.forEach(report => {
+                const inputs = report.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        if (input.checked) input.setAttribute('checked', 'checked');
+                        else input.removeAttribute('checked');
+                    } else {
+                        input.setAttribute('value', input.value || '');
+                    }
+                });
             });
 
-            // Check orientation based on report type
             const reportTypeSelector = document.getElementById('report-type-selector');
             const isLandscape = reportTypeSelector && reportTypeSelector.value === 'rice-corn';
             const pdfOrientation = isLandscape ? 'landscape' : 'portrait';
-            const winWidth = isLandscape ? 1122 : 794;
+
+            // Prepare live DOM for clean snapshot
+            const originalModalDisplay = reportElement.style.display;
+            const originalModalPadding = reportElement.style.padding;
+            
+            reportElement.style.display = 'block';
+            reportElement.style.padding = '0';
+
+            // Strip screen-reading zoom enhancements off live reports to secure a pristine 1:1 hardware footprint!
+            const originalZooms = [];
+            const originalZoomPriorities = [];
+            activeReports.forEach(report => {
+                originalZooms.push(report.style.getPropertyValue('zoom'));
+                originalZoomPriorities.push(report.style.getPropertyPriority('zoom'));
+                
+                // Force absolute unzoomed baseline. This neutralizes CSS rules like #tir-report-template { zoom: 1.3 } 
+                // which would artificially inflate the crop boxes and cleanly slice off the right half of the table!
+                report.style.setProperty('zoom', '1', 'important');
+            });
+
+            // To secure true print dimensions independent of the user's laptop screen size, we force A4 widths!
+            const scaledA4Width = '172.2mm';
+
+            // Cache the physical heights of ALL reports before hiding them!
+            const origHeights = activeReports.map(report => {
+                // Temporarily force exact A4 width so text 'un-wraps' and reveals the true printing height 
+                // unaffected by narrow browser windows!
+                const w = report.style.width;
+                const p = report.style.getPropertyPriority('width');
+                
+                report.style.setProperty('width', '210mm', 'important');
+                const hardwareHeight = report.offsetHeight;
+                
+                if (w) report.style.setProperty('width', w, p);
+                else report.style.removeProperty('width');
+                
+                return hardwareHeight;
+            });
+
+            // To seamlessly merge AND paginate multiple forms (e.g. ADSS + TIR), we build a sterile staging sequence
+            const sequenceWrapper = document.createElement('div');
+            // Fix sequence wrapper natively to 82% of A4 (210 * 0.82) to prevent responsive-DOM squishing constraints!
+            sequenceWrapper.style.width = scaledA4Width;
+            sequenceWrapper.style.margin = '0 auto 0 0';
+
+            // Temporarily hide original live reports so they don't break flex layout or camera context
+            const originalDisplays = [];
+            activeReports.forEach(report => {
+                originalDisplays.push(report.style.display);
+                report.style.display = 'none';
+            });
 
             try {
-                // Temporarily force max-width to none so html2canvas doesn't truncate based on responsive CSS
-                const originalMaxWidth = reportElement.style.maxWidth;
-                reportElement.style.maxWidth = 'none';
+                // Mathematically clone and scale all active forms sequentially
+                activeReports.forEach((report, index) => {
+                    const origHeight = origHeights[index];
+                    const cropHeight = origHeight * 0.82;
 
-                const pdfBlob = await html2pdf().from(reportElement).set({
-                    margin: [10, 5, 10, 5],
+                    const clone = report.cloneNode(true);
+                    
+                    // Force the clone to render exactly at full A4 width so columns logically expand to their true width limit!
+                    clone.style.setProperty('width', '210mm', 'important');
+                    
+                    // The clone flawlessly inherits the inline 'zoom: 1 !important', securely clamping it within native bounds
+                    clone.style.display = 'block'; // Ensure clone is visible
+                    clone.style.margin = '0'; // Wipe inline margins
+                    clone.style.transform = 'scale(0.82)';
+                    clone.style.transformOrigin = 'top left';
+                    
+                    // Because transform:scale shrinks the visual pixels but NOT the DOM footprint, 
+                    // html2canvas normally captures the empty whitespace at the bottom.
+                    // By isolating each clone into a tight hardware crop-box, we completely obliterate trailing whitespace! 
+                    // This prevents html2pdf from spawning blank empty pages between real reports.
+                    const cropBox = document.createElement('div');
+                    cropBox.style.width = scaledA4Width;
+                    cropBox.style.height = cropHeight + 'px';
+                    cropBox.style.overflow = 'hidden';
+                    cropBox.style.position = 'relative';
+
+                    cropBox.appendChild(clone);
+                    sequenceWrapper.appendChild(cropBox);
+                    
+                    // Hard-inject jsPDF page breaks between iterations
+                    if (index < activeReports.length - 1) {
+                        const pb = document.createElement('div');
+                        pb.classList.add('html2pdf__page-break');
+                        pb.style.pageBreakAfter = 'always';
+                        pb.style.height = '1px';
+                        sequenceWrapper.appendChild(pb);
+                    }
+                });
+
+                // Attach sequence firmly back into the modal
+                reportElement.appendChild(sequenceWrapper);
+
+                // Prime layout engine
+                void sequenceWrapper.offsetHeight;
+
+                const pdfBlob = await html2pdf().from(sequenceWrapper).set({
+                    margin: [10, 18.9, 0, 18.9], 
                     filename: 'Preprocessing_Report.pdf',
                     image: { type: 'jpeg', quality: 1.0 },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+                    // Instruct html2pdf to honor our explicit page breaks iteratively
+                    pagebreak: { mode: ['css', 'legacy'] },
                     html2canvas: { 
                         scale: 2,
-                        windowWidth: winWidth,
-                        useCORS: true,
-                        onclone: function(clonedDoc) {
-                            // Re-enforce the modal layout on the cloned target
-                            const clonedBody = clonedDoc.querySelector('.modal-body') || clonedDoc.body;
-                            if(clonedBody && clonedBody.style) {
-                                clonedBody.style.position = 'static';
-                                clonedBody.style.width = '100%';
-                                clonedBody.style.background = 'white';
-                                clonedBody.style.maxWidth = 'none';
-                                clonedBody.classList.remove('hidden');
-                            }
-
-                            // Find and extract `@media print` CSS and inject it as standard CSS inside the clone
-
-                            let printStyles = '';
-                            for (let i = 0; i < document.styleSheets.length; i++) {
-                                try {
-                                    const rules = document.styleSheets[i].cssRules;
-                                    for (let j = 0; j < rules.length; j++) {
-                                        if (rules[j].conditionText === 'print') {
-                                            for (let k = 0; k < rules[j].cssRules.length; k++) {
-                                                printStyles += rules[j].cssRules[k].cssText + '\\n';
-                                            }
-                                        }
-                                    }
-                                } catch(e) { /* CORS cross-domain stylesheet exception handler */ }
-                            }
-                            const styleTag = clonedDoc.createElement('style');
-                            styleTag.innerHTML = printStyles;
-                            clonedDoc.head.appendChild(styleTag);
-                        }
+                        useCORS: true
                     },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: pdfOrientation }
                 }).output('blob');
-                
-                reportElement.style.maxWidth = originalMaxWidth;
                 
                 zip.file("Preprocessing_Report.pdf", pdfBlob);
             } catch (e) {
                 console.error("HTML2PDF Error:", e);
                 // Fallback to HTML if generation completely fails
-                zip.file("Preprocessing_Report.html", reportElement.innerHTML);
+                zip.file("Preprocessing_Report.html", sequenceWrapper ? sequenceWrapper.innerHTML : activeReports[0].innerHTML);
+            } finally {
+                // Tear down sequence wrapper cleanly
+                if (reportElement.contains(sequenceWrapper)) reportElement.removeChild(sequenceWrapper);
+                
+                // Immediately restore user environment
+                activeReports.forEach((report, index) => {
+                    report.style.display = originalDisplays[index];
+                    
+                    const z = originalZooms[index];
+                    const p = originalZoomPriorities[index];
+                    if (z) {
+                        report.style.setProperty('zoom', z, p);
+                    } else {
+                        report.style.removeProperty('zoom');
+                    }
+                });
+                
+                reportElement.style.display = originalModalDisplay;
+                reportElement.style.padding = originalModalPadding;
             }
         }
 
