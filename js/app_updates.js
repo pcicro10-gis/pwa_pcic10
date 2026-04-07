@@ -6,6 +6,14 @@ const APP_ANNOUNCEMENT = `⚠️ <strong>This application is under it's final pi
 promptly. Thank you.`;
 
 const APP_RELEASE_NOTES = `
+<strong>v1.4.4 (2026-04-07)</strong>
+<ul style="margin-top: 5px; margin-bottom: 15px;">
+    <li>[FEAT] Added safety constraints for ADSS Premium limiting input to the 14.01 - 100.99 range.</li>
+    <li>[FEAT] Enabled manual edit overrides for the auto-calculated Crops Total Amount Cover.</li>
+    <li>[FEAT] Enhanced Preprocessing Hub save workflow using native PDF cloning rendering to bypass traditional printing dialogs.</li>
+    <li>[FEAT] Implemented highly structured dynamic naming conventions for Preprocessing Hub PDF and CSV exports (Crop, Banca, ADSS, Livestock).</li>
+</ul>
+
 <strong>v1.4.3 (2026-03-31)</strong>
 <ul style="margin-top: 5px; margin-bottom: 15px;">
     <li>[FEAT] Completely rebuilt Address Autocomplete framework ensuring lightning fast, synchronous, and flawless offline integration natively from a global static index.</li>

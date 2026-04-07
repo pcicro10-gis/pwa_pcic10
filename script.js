@@ -3,7 +3,7 @@ function toggleSidebar() {
 }
 
 // === VERSION CONTROL ===
-const APP_VERSION = "1.4.3"; // Single source of truth
+const APP_VERSION = "1.4.4"; // Single source of truth
 // =======================
 
 const getDeviceID = () => {
