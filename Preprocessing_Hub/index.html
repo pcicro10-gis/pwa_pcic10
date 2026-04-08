@@ -22,12 +22,7 @@
 
 <body class="preprocessing-hub-body">
     <div class="app-container">
-        <header>
-            <div class="logo">
-                <span class="icon">🌾</span>
-                <h1>Insurance Application Preprocessing</span></h1>
-            </div>
-        </header>
+
 
         <main>
             <section class="upload-section" id="drop-zone">
@@ -48,51 +43,72 @@
 
                 <div class="table-controls">
                     <div class="controls-row">
-                        <div class="search-box">
-                            <input type="text" id="table-search" placeholder="Search in table...">
+                        <div class="input-group search-box">
+                            <label>Search Record</label>
+                            <input type="text" id="table-search" placeholder="Search...">
                         </div>
                         <div class="filter-box">
-                            <select id="insurance-filter" class="filter-select">
-                                <option value="all">All Insurance Lines</option>
-                            </select>
+                            <div class="input-group">
+                                <label>Insurance Line</label>
+                                <select id="insurance-filter" class="filter-select">
+                                    <option value="all">All Insurance Lines</option>
+                                </select>
+                            </div>
 
                             <!-- Crop Specific Filters -->
                             <div id="crop-filters-container" class="context-filters"
-                                style="display: none; align-items: center; gap: 10px;">
-                                <select id="crop-filter" class="filter-select">
-                                    <option value="all">All Crop Types</option>
-                                </select>
-                                <input type="date" id="date-from-filter" class="filter-select"
-                                    placeholder="From Planting Date">
-                                <input type="date" id="date-to-filter" class="filter-select"
-                                    placeholder="To Planting Date">
+                                style="display: none; align-items: flex-end; gap: 10px;">
+                                <div class="input-group">
+                                    <label>Crop Type</label>
+                                    <select id="crop-filter" class="filter-select">
+                                        <option value="all">All Crop Types</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="date-from-filter" class="filter-select">
+                                </div>
+                                <div class="input-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="date-to-filter" class="filter-select">
+                                </div>
                             </div>
 
                             <!-- Livestock Specific Filters -->
                             <div id="livestock-filters-container" class="context-filters"
-                                style="display: none; align-items: center; gap: 10px;">
-                                <select id="animal-type-filter" class="filter-select">
-                                    <option value="all">All Animal Types</option>
-                                </select>
-                                <select id="classification-filter" class="filter-select">
-                                    <option value="all">All Classifications</option>
-                                </select>
+                                style="display: none; align-items: flex-end; gap: 10px;">
+                                <div class="input-group">
+                                    <label>Animal</label>
+                                    <select id="animal-type-filter" class="filter-select">
+                                        <option value="all">All Animal Types</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Classification</label>
+                                    <select id="classification-filter" class="filter-select">
+                                        <option value="all">All Classifications</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- Banca Specific Filters -->
                             <div id="banca-filters-container" class="context-filters"
-                                style="display: none; align-items: center; gap: 10px;">
-                                <select id="boat-type-filter" class="filter-select">
-                                    <option value="all">All Boat Types</option>
-                                </select>
-                                <select id="boat-material-filter" class="filter-select">
-                                    <option value="all">All Boat Materials</option>
-                                </select>
+                                style="display: none; align-items: flex-end; gap: 10px;">
+                                <div class="input-group">
+                                    <label>Boat Type</label>
+                                    <select id="boat-type-filter" class="filter-select">
+                                        <option value="all">All Boat Types</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Material</label>
+                                    <select id="boat-material-filter" class="filter-select">
+                                        <option value="all">All Boat Materials</option>
+                                    </select>
+                                </div>
                             </div>
-                            <select id="sort-filter" class="filter-select">
-                                <option value="default">Default Order</option>
-                                <option value="lastname">Alphabetize by Last Name</option>
-                            </select>
+                            
+
                         </div>
                     </div>
 
@@ -103,15 +119,18 @@
                         <button class="btn btn-secondary" id="export-summary-btn">
                             <i class="fas fa-file-export"></i> Export Summary CSV
                         </button>
-                        <select id="report-type-selector" class="filter-select" style="min-width: 250px;">
-                            <option value="none">Select Preprocessing Slip</option>
-                            <option value="rice-corn">Rice/Corn Pre-processing Slip</option>
-                            <option value="tir">ADSS/TIR Slip</option>
-                            <option value="hvc">HVC Preprocessing Slip</option>
-                            <option value="fisheries">Fisheries Preprocessing Slip</option>
-                            <option value="livestock">Livestock Preprocess Slip</option>
-                            <option value="noncrop">NCI Preprocessing Slip</option>
-                        </select>
+                        <div class="input-group">
+                            <label>Report Type</label>
+                            <select id="report-type-selector" class="filter-select" style="min-width: 250px;">
+                                <option value="none">Select Preprocessing Slip</option>
+                                <option value="rice-corn">Rice/Corn Pre-processing Slip</option>
+                                <option value="tir">ADSS/TIR Slip</option>
+                                <option value="hvc">HVC Preprocessing Slip</option>
+                                <option value="fisheries">Fisheries Preprocessing Slip</option>
+                                <option value="livestock">Livestock Preprocess Slip</option>
+                                <option value="noncrop">NCI Preprocessing Slip</option>
+                            </select>
+                        </div>
                         <button id="reset-filters-btn" class="btn">Reset Filters</button>
                         <div class="stats-badge" id="row-count">0 Rows</div>
                         <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">

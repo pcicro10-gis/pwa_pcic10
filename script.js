@@ -2,6 +2,57 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
+// --- Global App Fullscreen Toggle ---
+function toggleAppFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((err) => {
+            console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+            showToast("This device or browser does not support fullscreen mode.", "error");
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+// Listen for fullscreen changes to update the icon
+document.addEventListener('fullscreenchange', () => {
+    const icon = document.getElementById('fullscreen-icon');
+    if (icon) {
+        if (document.fullscreenElement) {
+            icon.className = 'fas fa-compress';
+        } else {
+            icon.className = 'fas fa-expand';
+        }
+    }
+});
+
+// --- Toast Notification System ---
+function showToast(message, type = 'success', duration = 3000) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Add icon based on type
+    let icon = 'info-circle';
+    if (type === 'success') icon = 'check-circle';
+    if (type === 'error') icon = 'exclamation-circle';
+
+    toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    // Auto-remove
+    setTimeout(() => {
+        toast.style.animation = 'toastFadeOut 0.5s forwards';
+        setTimeout(() => toast.remove(), 500);
+    }, duration);
+}
+
 // === VERSION CONTROL ===
 const APP_VERSION = "1.4.4"; // Single source of truth
 // =======================
@@ -2504,35 +2555,11 @@ async function finalizeApplication(mode = 'complete') {
     // --- User Guide Update ---
     /* Document update process for guide handled in index.html */
 
-    // --- Global App Fullscreen Toggle ---
-    function toggleAppFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch((err) => {
-                console.error(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
-                alert("This device or browser does not support fullscreen mode.");
-            });
-        } else {
-            document.exitFullscreen();
-        }
-    }
-
-    // Listen for fullscreen changes to update the icon
-    document.addEventListener('fullscreenchange', () => {
-        const icon = document.getElementById('fullscreen-icon');
-        if (icon) {
-            if (document.fullscreenElement) {
-                icon.className = 'fas fa-compress';
-            } else {
-                icon.className = 'fas fa-expand';
-            }
-        }
-    });
-
-
     // Also update the profile in the profiles table to persist the photo for future use
     if (currentFarmer && currentFarmer.FarmersID) {
         await db.profiles.put(currentFarmer);
     }
+
 
     // Refresh Dashboards
     renderLineStats();
@@ -2548,7 +2575,7 @@ async function finalizeApplication(mode = 'complete') {
     setTimeout(() => {
         if (mode === 'next_farm') {
             // PARTIAL RESET: Keep Farmer Info, Clear Farm/Policy for next entry
-            alert("Application Saved! Please enter details for the NEXT policy.");
+            showToast("Application Saved! Please enter details for the NEXT policy.");
 
             // 1. Clear Farm Location Details
             document.getElementById('f_farm_select').value = ""; // Reset selector
@@ -2630,7 +2657,7 @@ async function finalizeApplication(mode = 'complete') {
 
         } else {
             // FULL RESET (Default)
-            alert("Enrollment Completed Successfully.");
+            showToast("Enrollment Completed Successfully.");
 
             // Clear persistence for new application
             localStorage.setItem('pcic_enrollment_active', 'false');

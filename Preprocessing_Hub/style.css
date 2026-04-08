@@ -1,17 +1,17 @@
 :root {
-    --primary-color: #00695c;
-    /* Deep Teal/Green for PCIC */
-    --primary-light: #4db6ac;
-    --primary-dark: #004d40;
-    --accent-color: #fbc02d;
+    --primary-color: #1b5e20;
+    /* Deep Green for PCIC */
+    --primary-light: #4c8c4a;
+    --primary-dark: #103b14;
+    --accent-color: #ffd600;
     /* Yellow/Gold for Rice/Corn */
-    --accent-hover: #f9a825;
-    --bg-gradient: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+    --accent-hover: #ffeb3b;
+    --bg-gradient: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
     --card-bg: rgba(255, 255, 255, 0.95);
     --glass-bg: rgba(255, 255, 255, 0.8);
     --text-color: #263238;
     --text-muted: #546e7a;
-    --shadow: 0 8px 32px rgba(0, 77, 64, 0.15);
+    --shadow: 0 8px 32px rgba(27, 94, 32, 0.15);
     --border-radius: 12px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -29,7 +29,7 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    padding: 2rem;
+    padding: 0.5rem 1rem;
 }
 
 /* Custom, Wider Scrollbars */
@@ -39,7 +39,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #e0f2f1;
+    background: #e8f5e9;
     /* Match background gradient start */
     border-radius: 10px;
 }
@@ -47,7 +47,7 @@ body {
 ::-webkit-scrollbar-thumb {
     background: var(--primary-light);
     border-radius: 10px;
-    border: 3px solid #e0f2f1;
+    border: 3px solid #e8f5e9;
     /* Padding effect against track */
 }
 
@@ -116,8 +116,8 @@ header {
 
 .upload-section.drag-over {
     border-color: var(--primary-color);
-    background: rgba(0, 105, 92, 0.05);
-    /* Tint of teal */
+    background: rgba(27, 94, 32, 0.05);
+    /* Tint of green */
     transform: scale(1.02);
 }
 
@@ -142,8 +142,8 @@ header {
 .btn {
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
-    border: 1px solid #b2dfdb;
-    /* Teal light border */
+    border: 1px solid #c8e6c9;
+    /* Green light border */
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
@@ -169,8 +169,8 @@ header {
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 105, 92, 0.15);
-    /* Teal shadow */
+    box-shadow: 0 4px 12px rgba(27, 94, 32, 0.15);
+    /* Green shadow */
     border-color: var(--primary-color);
 }
 
@@ -186,41 +186,37 @@ header {
 
 .summary-grid {
     display: grid;
-    /* 30% narrow: 240px * 0.7 = ~168px */
-    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-    gap: 1rem;
-    margin: 1.5rem 0;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+    margin: 0.5rem 0;
 }
 
 .card {
     background: var(--card-bg);
-    /* 50% shorter height: 1.5rem -> 0.75rem padding */
-    padding: 0.75rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    border-left: 5px solid var(--primary-color);
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(27, 94, 32, 0.08);
+    border-left: 4px solid var(--primary-color);
     transition: var(--transition);
 }
 
 .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(27, 94, 32, 0.12);
 }
 
 .card-title {
     color: var(--text-muted);
-    font-size: 0.75rem;
-    /* reduced from 0.9rem */
-    font-weight: 600;
+    font-size: 0.65rem;
+    font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 0.25rem;
-    /* reduced from 0.5rem */
+    margin-bottom: 0.15rem;
 }
 
 .card-value {
     color: var(--primary-dark);
-    font-size: 1.4rem;
-    /* reduced from 1.8rem */
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
 }
 
 /* Table Controls */
@@ -234,17 +230,30 @@ header {
 
 .controls-row {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 0.5rem;
     flex-wrap: wrap;
     width: 100%;
 }
 
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.input-group label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .search-box input {
-    padding: 0.8rem 1.5rem;
-    border-radius: 50px;
-    border: 1px solid #b2dfdb;
-    /* Teal light border */
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 13px;
     width: 300px;
     outline: none;
     transition: var(--transition);
@@ -252,8 +261,8 @@ header {
 
 .search-box input:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 105, 92, 0.1);
-    /* Teal focus glow */
+    box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+    /* Green focus glow */
 }
 
 .filter-box {
@@ -263,10 +272,10 @@ header {
 }
 
 .filter-select {
-    padding: 0.8rem 1.5rem;
-    border-radius: 50px;
-    border: 1px solid #b2dfdb;
-    /* Teal light border */
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 13px;
     outline: none;
     transition: var(--transition);
     background-color: white;
@@ -277,8 +286,8 @@ header {
 
 .filter-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 105, 92, 0.1);
-    /* Teal focus glow */
+    box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+    /* Green focus glow */
 }
 
 #reset-filters-btn {
@@ -292,8 +301,8 @@ header {
 .stats-badge {
     background: white;
     color: var(--text-color);
-    border: 1px solid #b2dfdb;
-    /* Teal light border */
+    border: 1px solid #c8e6c9;
+    /* Green light border */
     padding: 0.6rem 1.5rem;
     border-radius: 50px;
     font-weight: 600;
@@ -382,8 +391,8 @@ th {
 
 td {
     padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid #e0f2f1;
-    /* Light teal border */
+    border-bottom: 1px solid #e8f5e9;
+    /* Light green border */
     font-size: 0.85rem;
     white-space: nowrap;
     overflow: hidden;
@@ -429,13 +438,13 @@ td:first-child {
 }
 
 tr:nth-child(even) {
-    background: #e0f2f1;
-    /* Light teal tint */
+    background: #e8f5e9;
+    /* Light green tint */
 }
 
 tbody tr:hover {
-    background: #b2dfdb;
-    /* Stronger teal hover */
+    background: #c8e6c9;
+    /* Stronger green hover */
 }
 
 footer {
@@ -452,7 +461,7 @@ footer {
 }
 
 ::-webkit-scrollbar-track {
-    background: #e0f2f1;
+    background: #e8f5e9;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -650,12 +659,12 @@ footer {
 }
 
 .input-line:focus {
-    background-color: rgba(0, 105, 92, 0.1);
-    /* Light teal highlight on edit */
+    background-color: rgba(27, 94, 32, 0.1);
+    /* Light green highlight on edit */
 }
 
 [contenteditable="true"]:focus {
-    background-color: rgba(0, 105, 92, 0.1);
+    background-color: rgba(27, 94, 32, 0.1);
     outline: none;
     cursor: text;
 }
